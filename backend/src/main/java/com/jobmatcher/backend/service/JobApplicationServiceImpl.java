@@ -35,12 +35,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public List<JobApplication> getApplicationsByUser(Long userId) {
-        return List.of();
+        return jobApplicationRepository.findByUserId(userId);
     }
 
     @Override
     public List<JobApplication> getApplicationsByJob(Long jobId) {
-        return List.of();
+        return jobApplicationRepository.findByJobId(jobId);
     }
 
     @Override
