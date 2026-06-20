@@ -2,16 +2,14 @@ package com.jobmatcher.backend.service;
 
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User findUserByEmail(String email) throws Exception{
