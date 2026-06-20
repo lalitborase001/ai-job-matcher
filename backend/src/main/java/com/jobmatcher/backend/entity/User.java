@@ -28,5 +28,5 @@ public class User {
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Application> applications = new ArrayList<>();
+    private List<JobApplication> jobApplications = new ArrayList<>();
 }
