@@ -2,7 +2,6 @@ package com.jobmatcher.backend.service;
 
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
