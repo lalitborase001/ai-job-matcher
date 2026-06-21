@@ -6,12 +6,12 @@ import java.util.List;
 
 public interface JobService {
 
-    public Job createJob(Job job);
-    public Job getJobById(Long id) throws Exception;
+    Job createJob(Job job);
+    Job getJobById(Long id) throws Exception;
 
-    public Job updateJob(Long id, Job job) throws Exception;
-    public List<Job> getAllJob();
+    Job updateJob(Long id, Job job) throws Exception;
+    List<Job> getAllJob();
 
-    public void deleteJob(Long id);
+    void deleteJob(Long id);
 
 }
