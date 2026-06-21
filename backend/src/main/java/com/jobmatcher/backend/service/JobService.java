@@ -8,8 +8,10 @@ public interface JobService {
 
     public Job createJob(Job job);
     public Job getJobById(Long id) throws Exception;
+
     public Job updateJob(Long id, Job job) throws Exception;
-    public List<Job> getAllJob(Long id);
+    public List<Job> getAllJob();
+
     public void deleteJob(Long id);
 
 }

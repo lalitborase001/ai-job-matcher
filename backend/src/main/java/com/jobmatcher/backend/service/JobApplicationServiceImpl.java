@@ -45,7 +45,11 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public JobApplication updateStatus(Long applicationId, String status) throws Exception {
-        return null;
+        JobApplication application = jobApplicationRepository.findById(applicationId)
+                        .orElseThrow(() -> new Exception("Application not found"));
+        application.setStatus(status);
+
+        return jobApplicationRepository.save(application);
     }
 
 
