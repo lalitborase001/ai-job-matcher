@@ -23,8 +23,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     public JobApplication applyForJob(Long userId, Long jobId) throws Exception {
         User user = userRepository.findById(userId).orElseThrow(() -> new Exception("User not found"));
 
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new Exception("Job not found"));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new Exception("Job not found"));
 
         JobApplication application = new JobApplication();
         application.setUser(user);
