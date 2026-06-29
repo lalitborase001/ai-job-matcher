@@ -9,6 +9,10 @@ public interface UserService {
 
     User getUserById(Long id) throws Exception;
 
+    User updateUser(Long id,User user) throws Exception;
+
+    User deleteUser(Long id) throws Exception;
+
     List<User> getAllUsers();
 
     User findUserByJwtToken(String jwt) throws Exception;
