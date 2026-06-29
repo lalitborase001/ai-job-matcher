@@ -29,6 +29,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUser(Long id, User user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) throws Exception {
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return List.of();
     }

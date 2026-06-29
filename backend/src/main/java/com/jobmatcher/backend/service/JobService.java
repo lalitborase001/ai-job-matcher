@@ -10,7 +10,7 @@ public interface JobService {
     Job getJobById(Long id) throws Exception;
 
     Job updateJob(Long id, Job job) throws Exception;
-    List<Job> getAllJob();
+    List<Job> getAllJobs();
 
     void deleteJob(Long id);
 

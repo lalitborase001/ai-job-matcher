@@ -21,7 +21,23 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Job>> getAllJob(@RequestBody Job job){
-        return ResponseEntity.ok(jobService.getAllJob());
+    public ResponseEntity<List<Job>> getAllJobs(){
+        return ResponseEntity.ok(jobService.getAllJobs());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Job> getJobById(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(jobService.getJobById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job job) throws Exception {
+        return ResponseEntity.ok(jobService.updateJob(id, job));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
+        jobService.deleteJob(id);
+        return ResponseEntity.ok("Job deleted successfully");
     }
 }

@@ -11,7 +11,7 @@ public interface UserService {
 
     User updateUser(Long id,User user) throws Exception;
 
-    User deleteUser(Long id) throws Exception;
+    void deleteUser(Long id) throws Exception;
 
     List<User> getAllUsers();
 
