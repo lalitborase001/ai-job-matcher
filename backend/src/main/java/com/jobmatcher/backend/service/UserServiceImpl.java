@@ -20,26 +20,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
-        return null;
+        return userRepository.save(user);
     }
 
     @Override
     public User getUserById(Long id) throws Exception {
-        return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new Exception("User not found"));
     }
 
     @Override
     public User updateUser(Long id, User user) throws Exception {
-        return null;
+        User existingUser = getUserById(id);
+
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setResumeURL(user.getResumeURL());
+
+        return userRepository.save(existingUser);
     }
 
     @Override
     public void deleteUser(Long id) throws Exception {
+        User user = getUserById(id);
+        userRepository.delete(user);
     }
 
     @Override
     public List<User> getAllUsers() {
-        return List.of();
+        return userRepository.findAll();
     }
 
     @Override
