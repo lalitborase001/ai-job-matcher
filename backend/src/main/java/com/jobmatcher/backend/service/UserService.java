@@ -1,11 +1,13 @@
 package com.jobmatcher.backend.service;
 
+import com.jobmatcher.backend.dto.request.CreateUserRequest;
+import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
 
 import java.util.List;
 
 public interface UserService {
-    User saveUser(User user);
+    UserResponse saveUser(CreateUserRequest request);
 
     User getUserById(Long id) throws Exception;
 

@@ -1,5 +1,7 @@
 package com.jobmatcher.backend.service;
 
+import com.jobmatcher.backend.dto.request.CreateUserRequest;
+import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.UserRepository;
@@ -20,8 +22,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public UserResponse saveUser(CreateUserRequest request) {
+
+        User user = new User();
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        User savedUser = userRepository.save(user);
+        return new UserResponse(
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail()
+        );
     }
 
     @Override

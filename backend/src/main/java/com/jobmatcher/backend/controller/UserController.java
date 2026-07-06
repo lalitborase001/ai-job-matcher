@@ -1,5 +1,6 @@
 package com.jobmatcher.backend.controller;
 
+import com.jobmatcher.backend.dto.request.CreateUserRequest;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(user));
+    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(request));
     }
 
     @GetMapping

@@ -1,5 +1,6 @@
 package com.jobmatcher.backend.controller;
 
+import com.jobmatcher.backend.dto.request.CreateJobRequest;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody Job job){
-        return ResponseEntity.ok(jobService.createJob(job));
+    public ResponseEntity<Job> createJob(@RequestBody CreateJobRequest request){
+        return ResponseEntity.ok(jobService.createJob(request));
     }
 
     @GetMapping

@@ -1,5 +1,7 @@
 package com.jobmatcher.backend.service;
 
+import com.jobmatcher.backend.dto.request.CreateJobRequest;
+import com.jobmatcher.backend.dto.response.JobResponse;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.exception.JobNotFoundException;
 import com.jobmatcher.backend.repository.JobRepository;
@@ -15,8 +17,25 @@ public class JobServiceImpl implements JobService{
     private final JobRepository jobRepository;
 
     @Override
-    public Job createJob(Job job) {
-        return jobRepository.save(job);
+    public JobResponse createJob(CreateJobRequest request) {
+        Job job = new Job();
+
+        job.setTitle(request.getTitle());
+        job.setCompany(request.getCompany());
+        job.setSkills(request.getSkills());
+        job.setDescription(request.getDescription());
+        job.setLocation(request.getLocation());
+
+        Job savedJob = jobRepository.save(job);
+
+        return new JobResponse(
+                savedJob.getId(),
+                savedJob.getTitle(),
+                savedJob.getCompany(),
+                savedJob.getSkills(),
+                savedJob.getDescription(),
+                savedJob.getLocation()
+        );
     }
 
     @Override
