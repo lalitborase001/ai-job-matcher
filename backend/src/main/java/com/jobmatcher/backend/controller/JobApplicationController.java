@@ -2,6 +2,7 @@ package com.jobmatcher.backend.controller;
 
 import com.jobmatcher.backend.entity.JobApplication;
 import com.jobmatcher.backend.service.JobApplicationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/applications")
+@Tag(name = "Application API", description = "Operations related to Application")
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;

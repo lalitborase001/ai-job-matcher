@@ -1,8 +1,10 @@
 package com.jobmatcher.backend.controller;
 
 import com.jobmatcher.backend.dto.request.CreateJobRequest;
+import com.jobmatcher.backend.dto.response.JobResponse;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.service.JobService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +14,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/jobs")
+@Tag(name = "Job API", description = "Operations related to job")
 public class JobController {
 
     private final JobService jobService;
 
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody CreateJobRequest request){
+    public ResponseEntity<JobResponse> createJob(@RequestBody CreateJobRequest request){
         return ResponseEntity.ok(jobService.createJob(request));
     }
 

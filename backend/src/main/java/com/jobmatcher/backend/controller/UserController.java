@@ -1,8 +1,11 @@
 package com.jobmatcher.backend.controller;
 
 import com.jobmatcher.backend.dto.request.CreateUserRequest;
+import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +16,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
+@Tag(name = "User API", description = "Operations related to users")
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(request));
     }
 
