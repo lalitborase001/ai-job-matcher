@@ -1,6 +1,7 @@
 package com.jobmatcher.backend.service;
 
 import com.jobmatcher.backend.entity.Job;
+import com.jobmatcher.backend.exception.JobNotFoundException;
 import com.jobmatcher.backend.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class JobServiceImpl implements JobService{
 
     @Override
     public Job getJobById(Long id) throws Exception {
-        return jobRepository.findById(id).orElseThrow(() -> new Exception("Job not found"));
+        return jobRepository.findById(id).orElseThrow(() -> new JobNotFoundException("Job not found"));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class JobServiceImpl implements JobService{
     @Override
     public Job updateJob(Long id, Job job) throws Exception {
 
-        Job existingJob = jobRepository.findById(id).orElseThrow(() -> new Exception("Job not found"));
+        Job existingJob = jobRepository.findById(id).orElseThrow(() -> new JobNotFoundException("Job not found"));
 
         existingJob.setTitle(job.getTitle());
         existingJob.setCompany(job.getCompany());

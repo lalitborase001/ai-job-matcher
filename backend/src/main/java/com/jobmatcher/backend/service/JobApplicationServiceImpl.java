@@ -3,6 +3,9 @@ package com.jobmatcher.backend.service;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.entity.JobApplication;
+import com.jobmatcher.backend.exception.ApplicationNotFoundException;
+import com.jobmatcher.backend.exception.JobNotFoundException;
+import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.JobApplicationRepository;
 import com.jobmatcher.backend.repository.JobRepository;
 import com.jobmatcher.backend.repository.UserRepository;
@@ -21,9 +24,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public JobApplication applyForJob(Long userId, Long jobId) throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(() -> new Exception("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> new Exception("Job not found"));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new JobNotFoundException("Job not found"));
 
         JobApplication application = new JobApplication();
         application.setUser(user);
@@ -45,7 +48,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Override
     public JobApplication updateStatus(Long applicationId, String status) throws Exception {
         JobApplication application = jobApplicationRepository.findById(applicationId)
-                        .orElseThrow(() -> new Exception("Application not found"));
+                        .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
         application.setStatus(status);
 
         return jobApplicationRepository.save(application);
