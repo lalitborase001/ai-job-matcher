@@ -1,6 +1,7 @@
 package com.jobmatcher.backend.service;
 
 import com.jobmatcher.backend.entity.User;
+import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String email) throws Exception{
-        return userRepository.findByEmail(email).orElseThrow(() -> new Exception("User not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) throws Exception {
         return userRepository.findById(id)
-                .orElseThrow(() -> new Exception("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
