@@ -3,6 +3,7 @@ package com.jobmatcher.backend.auth;
 import com.jobmatcher.backend.dto.request.RegisterRequest;
 import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
+import com.jobmatcher.backend.exception.EmailAlreadyExistsException;
 import com.jobmatcher.backend.repository.UserRepository;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
 
         User user = new User();
