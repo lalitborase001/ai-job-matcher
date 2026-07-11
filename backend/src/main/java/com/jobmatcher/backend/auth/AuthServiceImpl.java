@@ -1,12 +1,16 @@
 package com.jobmatcher.backend.auth;
 
+import com.jobmatcher.backend.dto.request.LoginRequest;
 import com.jobmatcher.backend.dto.request.RegisterRequest;
+import com.jobmatcher.backend.dto.response.LoginResponse;
 import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.exception.EmailAlreadyExistsException;
+import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.UserRepository;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +41,21 @@ public class AuthServiceImpl implements AuthService {
                 savedUser.getId(),
                 savedUser.getName(),
                 savedUser.getEmail()
+        );
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            tthrow new BadCredentialsException("Invalid email or password");
+        }
+
+        return new LoginResponse(
+                "dummy-token",
+                "Login successful"
         );
     }
 }
