@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new ExecutionControl.UserException("Email already exists");
+            throw new RuntimeException("Email already exists");
         }
 
         User user = new User();
