@@ -8,6 +8,7 @@ import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.exception.EmailAlreadyExistsException;
 import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.UserRepository;
+import com.jobmatcher.backend.security.JwtProvider;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,12 +51,14 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            tthrow new BadCredentialsException("Invalid email or password");
+            throw new BadCredentialsException("Invalid email or password");
         }
 
+        String token = JwtProvider.generateToken(user.getEmail());
+
         return new LoginResponse(
-                "dummy-token",
-                "Login successful"
+                token,
+                "Login Successful"
         );
     }
 }

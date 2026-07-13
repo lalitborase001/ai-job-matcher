@@ -1,6 +1,8 @@
 package com.jobmatcher.backend.auth;
 
+import com.jobmatcher.backend.dto.request.LoginRequest;
 import com.jobmatcher.backend.dto.request.RegisterRequest;
+import com.jobmatcher.backend.dto.response.LoginResponse;
 import com.jobmatcher.backend.dto.response.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,13 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        return ResponseEntity
+                .ok(authService.login(request));
     }
 }
