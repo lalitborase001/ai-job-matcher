@@ -1,5 +1,6 @@
 package com.jobmatcher.backend.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -24,6 +25,31 @@ public class JwtProvider {
                 )
                 .signWith(KEY)
                 .compact();
+    }
+    public static String getEmailFromToken(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(KEY)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.getSubject();
+    }
+
+    public static boolean validateToken(String token) {
+
+        try {
+            Jwts.parser()
+                    .verifyWith(KEY)
+                    .build()
+                    .parseSignedClaims(token);
+
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
