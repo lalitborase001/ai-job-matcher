@@ -2,22 +2,21 @@ package com.jobmatcher.backend.ai;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class GeminiClient {
 
-    @Value("${gemini.api.key}")
-    private String apiKey;
+    private final Client client;
 
-    public String generate(String prompt) {
-
-        Client client = Client.builder()
+    public GeminiClient(@Value("${gemini.api.key}") String apiKey) {
+        this.client = Client.builder()
                 .apiKey(apiKey)
                 .build();
+    }
+
+    public String generate(String prompt) {
 
         GenerateContentResponse response =
                 client.models.generateContent(

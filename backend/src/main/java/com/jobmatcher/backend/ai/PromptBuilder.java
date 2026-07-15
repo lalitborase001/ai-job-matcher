@@ -1,17 +1,20 @@
 package com.jobmatcher.backend.ai;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class PromptBuilder {
 
     public String buildPrompt(
             String resumeText,
             String jobDescription,
             double similarity
-    ){
+    ) {
 
         return """
 Analyze the resume against the job description.
 
-Return
+Return:
 
 1. Match Percentage
 2. Strengths
@@ -23,18 +26,16 @@ Return
 Resume:
 %s
 
-Job:
+Job Description:
 %s
 
-Current Similarity:
-%s
+Current Match Percentage:
+%.2f
 """
-.formatted(
-resumeText,
-jobDescription,
-similarity
-);
-
+                .formatted(
+                        resumeText,
+                        jobDescription,
+                        similarity
+                );
     }
-
 }

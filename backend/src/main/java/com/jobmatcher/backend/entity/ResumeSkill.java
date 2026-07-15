@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Entity
 @Table(name = "resume_skills")
@@ -18,8 +17,11 @@ public class ResumeSkill {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "resume_id")
     private Resume resume;
 
     @ManyToOne
+    @JoinColumn(name = "skill_id")
     private Skill skill;
+
 }
