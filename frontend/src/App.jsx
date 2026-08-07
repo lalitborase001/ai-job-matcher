@@ -1,9 +1,14 @@
-import AppRoutes from "./routes/AppRoutes";
 
-function App() {
+import React from 'react';
 
-    return <AppRoutes />;
-
-}
+const App = () => {
+  return (
+    
+    <div>
+      <h1>AI Resume Job Matcher</h1>
+      <p>Frontend Setup Complete!</p>
+    </div>
+  );
+};
 
 export default App;
