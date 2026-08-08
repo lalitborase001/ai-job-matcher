@@ -1,14 +1,12 @@
-
-import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
   return (
-    
-    <div>
-      <h1>AI Resume Job Matcher</h1>
-      <p>Frontend Setup Complete!</p>
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 };
 
-export default App;
+export default App
