@@ -3,9 +3,9 @@ import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import Dashboard from '../pages/Dashboard';
 
 const HomePlaceholder = () => <h1>Home Page</h1>;
-const DashboardPlaceholder = () => <h1>Dashboard (Protected)</h1>;
 const ResumesPlaceholder = () => <h1>Resumes (Protected)</h1>;
 const NotFound = () => <h1>404 - Page Not Found</h1>;
 
@@ -18,7 +18,7 @@ const AppRoutes = () => {
       
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashboardPlaceholder />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/resumes" element={<ResumesPlaceholder />} />
           <Route path="/jobs" element={<h1>Jobs (Protected)</h1>} />
         </Route>
