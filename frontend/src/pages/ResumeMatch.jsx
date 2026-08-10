@@ -27,6 +27,10 @@ const ResumeMatch = () => {
       try {
         setIsLoadingResumes(true);
         const data = await getResumesAPI();
+        
+        // DEBUGGING: Log the backend data to see exactly what fields exist
+        console.log("Data received from Spring Boot:", data);
+        
         setResumes(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch resumes:", err);
@@ -85,7 +89,8 @@ const ResumeMatch = () => {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       <Card sx={{ mb: 4, p: 2 }}>
-        <Grid container spacing={3} alignItems="center">
+        {/* FIX: Moved alignItems into the sx prop to silence the React warning */}
+        <Grid container spacing={3} sx={{ alignItems: 'center' }}>
           <Grid item xs={12} md={8}>
             <FormControl fullWidth>
               <InputLabel id="resume-select-label">Select Resume</InputLabel>
@@ -98,11 +103,16 @@ const ResumeMatch = () => {
                 {resumes.length === 0 ? (
                   <MenuItem disabled value="">No resumes found. Upload one first!</MenuItem>
                 ) : (
-                  resumes.map((resume) => (
-                    <MenuItem key={resume.id} value={resume.id}>
-                      {resume.fileName || `Resume ID: ${resume.id}`}
-                    </MenuItem>
-                  ))
+                  resumes.map((resume, index) => {
+                    // FIX: Safely grab the ID whether Spring Boot named it 'id', 'resumeId', or 'uuid'
+                    const uniqueValue = resume.id || resume.resumeId || resume.uuid || `fallback-${index}`;
+                    
+                    return (
+                      <MenuItem key={uniqueValue} value={uniqueValue}>
+                        {resume.fileName || resume.name || `Resume ${index + 1}`}
+                      </MenuItem>
+                    );
+                  })
                 )}
               </Select>
             </FormControl>
@@ -134,7 +144,7 @@ const ResumeMatch = () => {
               </Typography>
               <LinearProgress 
                 variant="determinate" 
-                value={matchResult.matchPercentage} 
+                value={matchResult.matchPercentage || 0} 
                 sx={{ height: 10, borderRadius: 5, mt: 2, mb: 1 }}
               />
             </Box>
