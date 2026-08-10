@@ -27,7 +27,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // 1. Enable CORS using the bean defined below
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .csrf(csrf -> csrf.disable())
@@ -55,24 +55,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 2. Define the CORS configuration bean
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow the React frontend
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 
-        // Allow all standard HTTP methods, including OPTIONS
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
-        // Allow headers required for JSON and JWT authentication
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
 
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Apply to all API endpoints
+       
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
