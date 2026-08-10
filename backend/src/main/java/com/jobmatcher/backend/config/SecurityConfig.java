@@ -41,7 +41,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         ).permitAll()
 
                         .anyRequest().authenticated()
@@ -68,7 +69,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-       
+
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
