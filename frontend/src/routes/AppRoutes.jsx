@@ -6,6 +6,7 @@ import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import ResumeUpload from '../pages/ResumeUpload';
 import Jobs from '../pages/Jobs';
+import ResumeMatch from '../pages/ResumeMatch';
 
 const HomePlaceholder = () => <h1>Home Page</h1>;
 const NotFound = () => <h1>404 - Page Not Found</h1>;
@@ -22,6 +23,7 @@ const AppRoutes = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/resumes" element={<ResumeUpload />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/:jobId/match" element={<ResumeMatch />} />
         </Route>
       </Route>
 
