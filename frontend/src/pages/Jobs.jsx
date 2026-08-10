@@ -8,8 +8,10 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { getJobsAPI, createJobAPI, deleteJobAPI } from '../services/jobService';
+import { useNavigate } from 'react-router-dom';
 
 const Jobs = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -107,7 +109,11 @@ const Jobs = () => {
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'space-between', borderTop: '1px solid #eee' }}>
-                  <Button size="small" color="primary">
+                  <Button 
+                    size="small" 
+                    color="primary"
+                    onClick={() => navigate(`/jobs/${job.id}/match`)}
+                  >
                     Match Resume
                   </Button>
                   <IconButton size="small" color="error" onClick={() => handleDelete(job.id)}>
