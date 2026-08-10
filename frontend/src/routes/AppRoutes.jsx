@@ -4,9 +4,9 @@ import MainLayout from '../components/layout/MainLayout';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
+import ResumeUpload from '../pages/ResumeUpload';
 
 const HomePlaceholder = () => <h1>Home Page</h1>;
-const ResumesPlaceholder = () => <h1>Resumes (Protected)</h1>;
 const NotFound = () => <h1>404 - Page Not Found</h1>;
 
 const AppRoutes = () => {
@@ -19,7 +19,7 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/resumes" element={<ResumesPlaceholder />} />
+          <Route path="/resumes" element={<ResumeUpload />} />
           <Route path="/jobs" element={<h1>Jobs (Protected)</h1>} />
         </Route>
       </Route>
