@@ -24,6 +24,8 @@ public class Resume {
     @Column(columnDefinition = "LONGTEXT")
     private String extractedText;
 
+    private Long fileSize;
+
     private LocalDateTime uploadedAt;
 
     @OneToOne

@@ -5,6 +5,7 @@ import com.jobmatcher.backend.dto.response.UserResponse;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.exception.UserNotFoundException;
 import com.jobmatcher.backend.repository.UserRepository;
+import com.jobmatcher.backend.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserByJwtToken(String jwt) throws Exception{
-        return null;
+    public User findUserByJwtToken(String jwt) throws Exception {
+
+        if (jwt == null || !jwt.startsWith("Bearer ")) {
+            throw new UserNotFoundException("Invalid JWT token");
+        }
+
+        String token = jwt.substring(7);
+
+        String email = JwtProvider.getEmailFromToken(token);
+
+        return findUserByEmail(email);
     }
 }
