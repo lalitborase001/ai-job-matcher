@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Button, Card, CardContent, CircularProgress, 
   Alert, Select, MenuItem, InputLabel, FormControl, Grid, Chip, 
-  LinearProgress, Divider 
+  LinearProgress, Divider, List, ListItem, ListItemIcon, ListItemText
 } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { getResumesAPI } from '../services/resumeService';
 import { generateMatchAPI } from '../services/matchService';
 
@@ -27,10 +29,6 @@ const ResumeMatch = () => {
       try {
         setIsLoadingResumes(true);
         const data = await getResumesAPI();
-        
-        // DEBUGGING: Log the backend data to see exactly what fields exist
-        console.log("Data received from Spring Boot:", data);
-        
         setResumes(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch resumes:", err);
@@ -51,11 +49,12 @@ const ResumeMatch = () => {
     try {
       setError('');
       setIsMatching(true);
+      // selectedResume now strictly holds the valid database ID
       const result = await generateMatchAPI(jobId, selectedResume);
       setMatchResult(result);
     } catch (err) {
       console.error("Match generation failed:", err);
-      setError('AI Match failed. Check if the backend AI module is configured correctly.');
+      setError('AI Match failed. Check your Spring Boot console for Gemini API errors.');
     } finally {
       setIsMatching(false);
     }
@@ -89,7 +88,6 @@ const ResumeMatch = () => {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       <Card sx={{ mb: 4, p: 2 }}>
-        {/* FIX: Moved alignItems into the sx prop to silence the React warning */}
         <Grid container spacing={3} sx={{ alignItems: 'center' }}>
           <Grid item xs={12} md={8}>
             <FormControl fullWidth>
@@ -103,16 +101,12 @@ const ResumeMatch = () => {
                 {resumes.length === 0 ? (
                   <MenuItem disabled value="">No resumes found. Upload one first!</MenuItem>
                 ) : (
-                  resumes.map((resume, index) => {
-                    // FIX: Safely grab the ID whether Spring Boot named it 'id', 'resumeId', or 'uuid'
-                    const uniqueValue = resume.id || resume.resumeId || resume.uuid || `fallback-${index}`;
-                    
-                    return (
-                      <MenuItem key={uniqueValue} value={uniqueValue}>
-                        {resume.fileName || resume.name || `Resume ${index + 1}`}
-                      </MenuItem>
-                    );
-                  })
+                  resumes.map((resume) => (
+                    // Now safely using the 'id' field we just added to the Java backend
+                    <MenuItem key={resume.id} value={resume.id}>
+                      {resume.fileName}
+                    </MenuItem>
+                  ))
                 )}
               </Select>
             </FormControl>
@@ -134,9 +128,12 @@ const ResumeMatch = () => {
         </Grid>
       </Card>
 
+      {/* RENDER THE AI RESPONSE BASED EXACTLY ON AiResponse.java */}
       {matchResult && (
         <Card elevation={3}>
           <CardContent sx={{ p: 4 }}>
+            
+            {/* MATCH PERCENTAGE */}
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="h5" gutterBottom>Match Score</Typography>
               <Typography variant="h2" color="primary" sx={{ fontWeight: 'bold' }}>
@@ -150,22 +147,35 @@ const ResumeMatch = () => {
             </Box>
 
             <Divider sx={{ my: 3 }} />
+            
+            {/* AI SUMMARY */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                AI Summary
+              </Typography>
+              <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                "{matchResult.summary}"
+              </Typography>
+            </Box>
 
+            <Divider sx={{ my: 3 }} />
+
+            {/* STRENGTHS & MISSING SKILLS */}
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" color="success.main" gutterBottom>
-                  Matching Skills
+                  Strengths
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {matchResult.matchingSkills?.map((skill, index) => (
-                    <Chip key={index} label={skill} color="success" variant="outlined" />
+                  {matchResult.strengths?.map((strength, index) => (
+                    <Chip key={index} label={strength} color="success" variant="outlined" />
                   ))}
                 </Box>
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" color="error.main" gutterBottom>
-                  Missing Skills (Gap)
+                  Missing Skills
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {matchResult.missingSkills?.map((skill, index) => (
@@ -177,14 +187,35 @@ const ResumeMatch = () => {
 
             <Divider sx={{ my: 3 }} />
 
-            <Box>
-              <Typography variant="h6" color="primary" gutterBottom>
-                AI Recommendations
-              </Typography>
-              <Typography variant="body1">
-                {matchResult.aiSuggestions}
-              </Typography>
-            </Box>
+            {/* IMPROVEMENTS & INTERVIEW QUESTIONS */}
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" color="warning.main" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LightbulbIcon sx={{ mr: 1 }} /> Suggested Improvements
+                </Typography>
+                <List dense>
+                  {matchResult.improvements?.map((item, index) => (
+                    <ListItem key={index} disablePadding sx={{ mb: 1 }}>
+                      <ListItemText primary={`• ${item}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" color="info.main" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <QuestionAnswerIcon sx={{ mr: 1 }} /> Prep Questions
+                </Typography>
+                <List dense>
+                  {matchResult.interviewQuestions?.map((item, index) => (
+                    <ListItem key={index} disablePadding sx={{ mb: 1 }}>
+                      <ListItemText primary={`• ${item}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Grid>
+            </Grid>
+
           </CardContent>
         </Card>
       )}
