@@ -45,6 +45,7 @@ public class ResumeServiceImpl implements ResumeService {
         Resume savedResume = resumeRepository.save(resume);
 
         return new ResumeResponse(
+                savedResume.getId(),
                 savedResume.getFileName(),
                 savedResume.getFilePath(),
                 file.getSize(),
@@ -62,6 +63,7 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeRepository.findByUserId(user.getId())
                 .stream()
                 .map(resume -> new ResumeResponse(
+                        resume.getId(),
                         resume.getFileName(),
                         resume.getFilePath(),
                         null,

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResumeResponse {
 
+    private Long id;
+
     private String fileName;
 
     private String downloadUrl;
