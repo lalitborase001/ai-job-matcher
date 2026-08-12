@@ -11,6 +11,8 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { getResumesAPI } from '../services/resumeService';
 import { generateMatchAPI } from '../services/matchService';
+import { applyForJobAPI } from '../services/applicationService';
+import { Snackbar } from '@mui/material';
 
 const ResumeMatch = () => {
   const { jobId } = useParams();
@@ -23,6 +25,30 @@ const ResumeMatch = () => {
   const [matchResult, setMatchResult] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSaveMatch = async () => {
+    try {
+      setIsSaving(true);
+      
+      const currentUserId = 1; 
+
+      await applyForJobAPI(
+        currentUserId, 
+        jobId, 
+        selectedResume, 
+        matchResult.matchPercentage
+      );
+      
+      setSaveSuccess(true);
+    } catch (err) {
+      console.error("Failed to save match:", err);
+      setError("Failed to save the match to your history.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   useEffect(() => {
     const fetchResumes = async () => {
@@ -215,10 +241,34 @@ const ResumeMatch = () => {
                 </List>
               </Grid>
             </Grid>
-
+            {/* Add this right before the closing </CardContent> tag */}
+            <Divider sx={{ my: 3 }} />
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button 
+                variant="contained" 
+                color="success" 
+                size="large"
+                onClick={handleSaveMatch}
+                disabled={isSaving || saveSuccess}
+              >
+                {saveSuccess ? 'Saved to History!' : (isSaving ? 'Saving...' : 'Save Match & Apply')}
+              </Button>
+            </Box>     
           </CardContent>
         </Card>
       )}
+      {/* Success Popup */}
+      <Snackbar 
+        open={saveSuccess} 
+        autoHideDuration={4000} 
+        onClose={() => setSaveSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          Match successfully saved to your Dashboard!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
