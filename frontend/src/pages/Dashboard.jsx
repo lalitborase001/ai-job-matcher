@@ -1,116 +1,113 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Card, CardContent, Button, CircularProgress, Alert } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
-import WorkIcon from '@mui/icons-material/Work';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import { getDashboardStatsAPI } from '../services/dashboardService';
+import React, { useEffect, useState } from 'react';
+import { 
+  Typography, 
+  Paper, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Chip,
+  Box,
+  CircularProgress
+} from '@mui/material';
+import { getApplicationsByUserAPI } from '../services/applicationService';
 
-const Dashboard = () => {
-  const { user } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
-  
-  const [stats, setStats] = useState({
-    totalResumes: 0,
-    totalJobs: 0,
-    totalMatches: 0
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+export default function Dashboard() {
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchHistory = async () => {
       try {
-        setIsLoading(true);
-        const data = await getDashboardStatsAPI();
-        if (data) {
-          setStats(data);
-        }
-      } catch (err) {
-        console.error("Dashboard stats fetch failed:", err);
-        setStats({ totalResumes: 0, totalJobs: 0, totalMatches: 0 });
+        // IMPORTANT: Replace '1' with your actual logged-in user's ID
+        const currentUserId = 1; 
+        const data = await getApplicationsByUserAPI(currentUserId);
+        
+        // Sort by newest first (optional)
+        const sortedData = data.sort((a, b) => b.applicationId - a.applicationId);
+        setHistory(sortedData);
+      } catch (error) {
+        console.error("Failed to fetch match history:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchHistory();
   }, []);
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // Helper function to color-code the match score badge
+  const getScoreColor = (score) => {
+    if (score >= 80) return "success";
+    if (score >= 50) return "warning";
+    return "error";
+  };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Welcome back, {user?.name || 'User'}!
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Here is an overview of your recent activity and resume matches.
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: '#1976d2' }}>
+        My Match History
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-            <DescriptionIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h5" component="div">
-                {stats.totalResumes || 0}
-              </Typography>
-              <Typography color="text.secondary">
-                Uploaded Resumes
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-            <WorkIcon color="secondary" sx={{ fontSize: 40, mb: 1 }} />
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h5" component="div">
-                {stats.totalJobs || 0}
-              </Typography>
-              <Typography color="text.secondary">
-                Saved Jobs
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-            <AssessmentIcon color="success" sx={{ fontSize: 40, mb: 1 }} />
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h5" component="div">
-                {stats.totalMatches || 0}
-              </Typography>
-              <Typography color="text.secondary">
-                Total Matches
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={() => navigate('/resumes')}>
-          Upload New Resume
-        </Button>
-        <Button variant="outlined" color="primary" onClick={() => navigate('/jobs')}>
-          Analyze Job Description
-        </Button>
-      </Box>
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow>
+                <TableCell><strong>Company</strong></TableCell>
+                <TableCell><strong>Job Title</strong></TableCell>
+                <TableCell><strong>Resume Used</strong></TableCell>
+                <TableCell align="center"><strong>AI Match Score</strong></TableCell>
+                <TableCell align="center"><strong>Status</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {history.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      No matches saved yet. Go analyze a resume to get started!
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                history.map((row) => (
+                  <TableRow 
+                    key={row.applicationId}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#fafafa' } }}
+                  >
+                    <TableCell sx={{ fontWeight: '500' }}>{row.company}</TableCell>
+                    <TableCell>{row.jobTitle}</TableCell>
+                    <TableCell>{row.resumeFileName}</TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        label={`${row.matchScore}%`}
+                        color={getScoreColor(row.matchScore)}
+                        variant={row.matchScore >= 80 ? "filled" : "outlined"}
+                        sx={{ fontWeight: 'bold', minWidth: '70px' }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip 
+                        label={row.status} 
+                        color="primary" 
+                        size="small" 
+                        variant="outlined"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Box>
   );
-};
-
-export default Dashboard;
+}

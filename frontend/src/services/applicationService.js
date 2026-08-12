@@ -11,3 +11,7 @@ export const applyForJobAPI = async (userId, jobId, resumeId, matchScore) => {
   });
   return response.data;
 };
+export const getApplicationsByUserAPI = async (userId) => {
+  const response = await axiosInstance.get(`/api/applications/user/${userId}`);
+  return response.data;
+};
