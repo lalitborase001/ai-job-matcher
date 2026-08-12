@@ -10,18 +10,19 @@ public class PromptBuilder {
             String jobDescription,
             double similarity
     ) {
-
         return """
 Analyze the resume against the job description.
+You MUST return the response ONLY as a valid JSON object. Do not include markdown formatting, backticks, or explanations. 
 
-Return:
-
-1. Match Percentage
-2. Strengths
-3. Missing Skills
-4. Resume Improvements
-5. ATS Optimization
-6. Interview Questions
+Use this EXACT JSON structure:
+{
+  "matchPercentage": 88.0,
+  "summary": "Provide a brief 3-sentence professional overview of how well the candidate fits the role.",
+  "strengths": ["Java", "Spring Boot", "REST APIs"],
+  "missingSkills": ["JPA", "Hibernate"],
+  "improvements": ["Fix the future date typo on the hackathon", "Add metrics to bullet points"],
+  "interviewQuestions": ["What is the difference between JDBC and Spring Data JPA?", "Explain layered architecture."]
+}
 
 Resume:
 %s
@@ -29,13 +30,9 @@ Resume:
 Job Description:
 %s
 
-Current Match Percentage:
+Current Keyword Match Percentage:
 %.2f
 """
-                .formatted(
-                        resumeText,
-                        jobDescription,
-                        similarity
-                );
+                .formatted(resumeText, jobDescription, similarity);
     }
 }
