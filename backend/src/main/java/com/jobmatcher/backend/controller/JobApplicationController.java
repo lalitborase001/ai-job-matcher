@@ -1,7 +1,10 @@
 package com.jobmatcher.backend.controller;
 
 import com.jobmatcher.backend.dto.response.JobApplicationResponse;
+import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.service.JobApplicationService;
+import com.jobmatcher.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,21 +20,31 @@ import java.util.List;
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
+    private final UserService userService; // <-- Added to decode the JWT
 
     @PostMapping("/apply")
     public ResponseEntity<JobApplicationResponse> applyForJob(
-            @RequestParam Long userId,
+            HttpServletRequest request,
             @RequestParam Long jobId,
             @RequestParam Long resumeId,
             @RequestParam Double matchScore) throws Exception {
 
+        // SECURE: Backend figures out who the user is!
+        String jwt = request.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(jwt);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(jobApplicationService.applyForJob(userId, jobId, resumeId, matchScore));
+                .body(jobApplicationService.applyForJob(user.getId(), jobId, resumeId, matchScore));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<JobApplicationResponse>> getApplicationsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(jobApplicationService.getApplicationsByUser(userId));
+    // SECURE: Changed from /user/{userId} to /my-history
+    @GetMapping("/my-history")
+    public ResponseEntity<List<JobApplicationResponse>> getMyApplications(HttpServletRequest request) throws Exception {
+
+        String jwt = request.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(jwt);
+
+        return ResponseEntity.ok(jobApplicationService.getApplicationsByUser(user.getId()));
     }
 
     @GetMapping("/job/{jobId}")
