@@ -23,7 +23,7 @@ public class AiServiceImpl implements AiService {
     private final GeminiClient geminiClient;
 
     // Spring Boot automatically provides this tool to parse JSON
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public AiResponse analyzeResume(Long resumeId, Long jobId) throws Exception {

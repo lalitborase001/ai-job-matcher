@@ -20,4 +20,8 @@ public class JobApplicationResponse {
     private String company;
 
     private String status;
+
+    private Double matchScore;
+
+    private String resumeFileName;
 }
