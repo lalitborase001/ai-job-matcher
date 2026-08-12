@@ -1,9 +1,9 @@
 import axiosInstance from '../api/axiosInstance';
 
-export const applyForJobAPI = async (userId, jobId, resumeId, matchScore) => {
+// Removed userId from parameters
+export const applyForJobAPI = async (jobId, resumeId, matchScore) => {
   const response = await axiosInstance.post('/api/applications/apply', null, {
     params: {
-      userId: userId,
       jobId: jobId,
       resumeId: resumeId,
       matchScore: matchScore
@@ -11,7 +11,9 @@ export const applyForJobAPI = async (userId, jobId, resumeId, matchScore) => {
   });
   return response.data;
 };
-export const getApplicationsByUserAPI = async (userId) => {
-  const response = await axiosInstance.get(`/api/applications/user/${userId}`);
+
+// Changed endpoint to /my-history and removed userId parameter
+export const getMyApplicationsAPI = async () => {
+  const response = await axiosInstance.get('/api/applications/my-history');
   return response.data;
 };
