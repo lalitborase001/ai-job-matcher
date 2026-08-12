@@ -11,12 +11,11 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const currentUserId = 1; // We will fix this hardcoded ID in the next phase!
         
         // Fetch both History and Stats at the same time
         const [historyData, statsResponse] = await Promise.all([
-          getApplicationsByUserAPI(currentUserId),
-          axiosInstance.get('/dashboard/stats') // The new endpoint!
+          getMyApplicationsAPI(), // <--- Updated! No ID needed!
+          axiosInstance.get('/dashboard/stats') 
         ]);
         
         setHistory(historyData.sort((a, b) => b.applicationId - a.applicationId));

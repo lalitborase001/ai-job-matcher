@@ -32,10 +32,8 @@ const ResumeMatch = () => {
     try {
       setIsSaving(true);
       
-      const currentUserId = 1; 
 
       await applyForJobAPI(
-        currentUserId, 
         jobId, 
         selectedResume, 
         matchResult.matchPercentage
