@@ -12,4 +12,5 @@ public interface ResumeService {
 
     List<ResumeResponse> getAllResumesForUser() throws Exception;
 
+    void deleteResume(Long id);
 }

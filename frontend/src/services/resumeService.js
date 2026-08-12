@@ -17,3 +17,8 @@ export const getResumesAPI = async () => {
   const response = await axiosInstance.get('/api/resume');
   return response.data;
 };
+
+export const deleteResumeAPI = async (id) => {
+  const response = await axiosInstance.delete(`/api/resume/${id}`);
+  return response.data;
+};

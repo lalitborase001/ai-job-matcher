@@ -71,4 +71,11 @@ public class ResumeServiceImpl implements ResumeService {
                 ))
                 .toList();
     }
+    @Override
+    public void deleteResume(Long id) {
+        if (!resumeRepository.existsById(id)) {
+            throw new RuntimeException("Resume not found with id: " + id);
+        }
+        resumeRepository.deleteById(id);
+    }
 }

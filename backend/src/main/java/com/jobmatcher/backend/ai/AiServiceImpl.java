@@ -41,6 +41,12 @@ public class AiServiceImpl implements AiService {
         MatchResponse match =
                 matchService.matchResumeWithJob(resumeId, jobId);
 
+        System.out.println("--- DEBUG START ---");
+        System.out.println("Resume File Name: " + resume.getFileName());
+        System.out.println("Extracted Text: [" + resume.getExtractedText() + "]");
+        System.out.println("Job Description: [" + job.getDescription() + "]");
+        System.out.println("--- DEBUG END ---");
+
         // Build prompt
         String prompt = promptBuilder.buildPrompt(
                 resume.getExtractedText(),
