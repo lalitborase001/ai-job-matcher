@@ -9,10 +9,11 @@ import Jobs from '../pages/Jobs';
 import ResumeMatch from '../pages/ResumeMatch';
 import JobDetails from '../pages/JobDetails';
 import Applications from '../pages/Applications';
+import Profile from '../pages/Profile';
+import Settings from '../pages/Settings';
+import NotFound from '../pages/NotFound';
 
 const HomePlaceholder = () => <h1>Home Page</h1>;
-const NotFound = () => <h1>404 - Page Not Found</h1>;
-
 const AppRoutes = () => {
   return (
     <Routes>
@@ -28,8 +29,10 @@ const AppRoutes = () => {
               <Route path="/jobs/:jobId" element={<JobDetails />} />
               <Route path="/jobs/:jobId/match" element={<ResumeMatch />} />
               <Route path="/applications" element={<Applications />} />
-            </Route>
-          </Route>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+                </Route>
+              </Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>
