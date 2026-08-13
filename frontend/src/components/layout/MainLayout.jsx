@@ -3,18 +3,24 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import PageTransition from '../common/PageTransition';
 
 const MainLayout = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const handleDrawerToggle = () => setMobileOpen((o) => !o);
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <Navbar />
-      {isAuthenticated && <Sidebar />}
-      
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Navbar onMobileMenu={handleDrawerToggle} />
+      {isAuthenticated && <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
+
+      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
         <Toolbar />
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </Box>
     </Box>
   );

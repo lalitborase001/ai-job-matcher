@@ -7,6 +7,8 @@ import Dashboard from '../pages/Dashboard';
 import ResumeUpload from '../pages/ResumeUpload';
 import Jobs from '../pages/Jobs';
 import ResumeMatch from '../pages/ResumeMatch';
+import JobDetails from '../pages/JobDetails';
+import Applications from '../pages/Applications';
 
 const HomePlaceholder = () => <h1>Home Page</h1>;
 const NotFound = () => <h1>404 - Page Not Found</h1>;
@@ -18,14 +20,16 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
-      <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/resumes" element={<ResumeUpload />} />
           <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/:jobId/match" element={<ResumeMatch />} />
-        </Route>
-      </Route>
+              <Route path="/jobs/:jobId" element={<JobDetails />} />
+              <Route path="/jobs/:jobId/match" element={<ResumeMatch />} />
+              <Route path="/applications" element={<Applications />} />
+            </Route>
+          </Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>

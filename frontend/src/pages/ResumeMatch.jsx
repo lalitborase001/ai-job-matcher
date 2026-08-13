@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Button, Card, CardContent, CircularProgress, 
   Alert, Select, MenuItem, InputLabel, FormControl, Grid, Chip, 
-  LinearProgress, Divider, List, ListItem, ListItemIcon, ListItemText
+  Divider, List, ListItem, ListItemIcon, ListItemText, Grow, Snackbar
 } from '@mui/material';
+import MatchScore from '../components/match/MatchScore';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
@@ -12,7 +13,6 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { getResumesAPI } from '../services/resumeService';
 import { generateMatchAPI } from '../services/matchService';
 import { applyForJobAPI } from '../services/applicationService';
-import { Snackbar } from '@mui/material';
 
 const ResumeMatch = () => {
   const { jobId } = useParams();
@@ -154,21 +154,17 @@ const ResumeMatch = () => {
 
       {/* RENDER THE AI RESPONSE BASED EXACTLY ON AiResponse.java */}
       {matchResult && (
-        <Card elevation={3}>
-          <CardContent sx={{ p: 4 }}>
-            
-            {/* MATCH PERCENTAGE */}
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Typography variant="h5" gutterBottom>Match Score</Typography>
-              <Typography variant="h2" color="primary" sx={{ fontWeight: 'bold' }}>
-                {matchResult.matchPercentage}%
-              </Typography>
-              <LinearProgress 
-                variant="determinate" 
-                value={matchResult.matchPercentage || 0} 
-                sx={{ height: 10, borderRadius: 5, mt: 2, mb: 1 }}
-              />
-            </Box>
+        <Grow in={!!matchResult} timeout={400}>
+          <Card elevation={3}>
+              <CardContent sx={{ p: 4 }}>
+             
+                {/* MATCH PERCENTAGE */}
+                <Box sx={{ textAlign: 'center', mb: 4 }}>
+                  <Typography variant="h5" gutterBottom>Match Score</Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                    <MatchScore score={matchResult.matchPercentage || 0} />
+                  </Box>            
+                </Box>
 
             <Divider sx={{ my: 3 }} />
             
@@ -255,6 +251,7 @@ const ResumeMatch = () => {
             </Box>     
           </CardContent>
         </Card>
+        </Grow>
       )}
       {/* Success Popup */}
       <Snackbar 
