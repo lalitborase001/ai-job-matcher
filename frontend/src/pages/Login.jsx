@@ -21,13 +21,36 @@ const Login = () => {
     try {
       setIsLoading(true);
       setErrorMsg('');
-      
+
       const response = await loginAPI(data);
-      
-      dispatch(setCredentials({
-        token: response.token,
-        user: response.user
-      }));
+      const token = response.token;
+
+      // store token so axios interceptor can use it
+      localStorage.setItem('token', token);
+
+      // decode token to get the subject (email)
+      const jwtDecode = (await import('jwt-decode')).default;
+      let email = null;
+      try {
+        const decoded = jwtDecode(token);
+        // backend sets subject as email
+        email = decoded?.sub || decoded?.email || decoded?.subject || null;
+      } catch (err) {
+        // ignore decode errors
+      }
+
+      let user = null;
+      if (email) {
+        try {
+          const usersResp = await (await import('../api/axiosInstance')).default.get('/api/users');
+          const users = usersResp.data || [];
+          user = users.find((u) => String(u.email).toLowerCase() === String(email).toLowerCase());
+        } catch (err) {
+          // if fetching user fails, continue with null user; UI will fallback to 'User'
+        }
+      }
+
+      dispatch(setCredentials({ token, user }));
 
       navigate(from, { replace: true });
     } catch (error) {

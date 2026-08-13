@@ -7,6 +7,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 260;
 
@@ -15,6 +16,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+  const { user } = useSelector((state) => state.auth);
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -61,10 +63,10 @@ const Sidebar = ({ mobileOpen, onClose }) => {
 
       <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar sx={{ width: 40, height: 40 }}>U</Avatar>
+          <Avatar sx={{ width: 40, height: 40 }}>{(user?.name && user.name.charAt(0)) || 'U'}</Avatar>
           <Box>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>User Name</Typography>
-            <Typography variant="caption" color="text.secondary">View profile</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>{user?.name || 'User'}</Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>View profile</Typography>
           </Box>
         </Box>
 

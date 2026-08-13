@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Box, Grid } from '@mui/material';
 import { getMyApplicationsAPI } from '../services/applicationService';
 import axiosInstance from '../api/axiosInstance'; 
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ totalApplications: 0, averageMatchScore: 0, topMatchScore: 0, pendingApplications: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +47,7 @@ export default function Dashboard() {
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
       <PageHeader
-        title={`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, User 👋`}
+        title={`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${user?.name || 'User'} 👋` }
         subtitle="Track your applications, improve your resume, and find jobs that match your skills."
       />
 
