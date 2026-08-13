@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Box, CircularProgress, Grid, Card, CardContent } from '@mui/material';
-import { getApplicationsByUserAPI } from '../services/applicationService';
-import axiosInstance from '../api/axiosInstance'; // Assuming this has your JWT interceptor
+import { getMyApplicationsAPI } from '../services/applicationService';
+import axiosInstance from '../api/axiosInstance'; 
 
 export default function Dashboard() {
   const [history, setHistory] = useState([]);
@@ -11,10 +11,9 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
-        // Fetch both History and Stats at the same time
+        // Fetch both History and Stats securely using the JWT backend logic!
         const [historyData, statsResponse] = await Promise.all([
-          getMyApplicationsAPI(), // <--- Updated! No ID needed!
+          getMyApplicationsAPI(),
           axiosInstance.get('/dashboard/stats') 
         ]);
         
@@ -62,18 +61,18 @@ export default function Dashboard() {
         </Box>
       ) : (
         <>
-          {/* STATS ROW */}
+          {/* STATS ROW (Removed the deprecated 'item' prop to fix the console warning) */}
           <Grid container spacing={3} sx={{ mb: 5 }}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <StatCard title="TOTAL APPLICATIONS" value={stats.totalApplications} color="#1976d2" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <StatCard title="AVERAGE MATCH" value={`${stats.averageMatchScore}%`} color="#ff9800" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <StatCard title="TOP SCORE" value={`${stats.topMatchScore}%`} color="#4caf50" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <StatCard title="PENDING REVIEWS" value={stats.pendingApplications} color="#9c27b0" />
             </Grid>
           </Grid>
