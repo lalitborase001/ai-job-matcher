@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { Container, Paper, Typography, TextField, Button, Box, Alert, Link } from '@mui/material';
 import { setCredentials } from '../redux/slices/authSlice';
-import { loginAPI } from '../services/authService';
+import { loginAPI, getCurrentUserAPI } from '../services/authService';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -28,27 +28,8 @@ const Login = () => {
       // store token so axios interceptor can use it
       localStorage.setItem('token', token);
 
-      // decode token to get the subject (email)
-      const jwtDecode = (await import('jwt-decode')).default;
-      let email = null;
-      try {
-        const decoded = jwtDecode(token);
-        // backend sets subject as email
-        email = decoded?.sub || decoded?.email || decoded?.subject || null;
-      } catch (err) {
-        // ignore decode errors
-      }
-
-      let user = null;
-      if (email) {
-        try {
-          const usersResp = await (await import('../api/axiosInstance')).default.get('/api/users');
-          const users = usersResp.data || [];
-          user = users.find((u) => String(u.email).toLowerCase() === String(email).toLowerCase());
-        } catch (err) {
-          // if fetching user fails, continue with null user; UI will fallback to 'User'
-        }
-      }
+      // if lookup fails, continue with null user; UI will fall back to 'User'
+      const user = await getCurrentUserAPI(token);
 
       dispatch(setCredentials({ token, user }));
 

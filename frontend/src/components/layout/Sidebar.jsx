@@ -7,7 +7,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
 
 const drawerWidth = 260;
 
@@ -15,8 +16,15 @@ const Sidebar = ({ mobileOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const dispatch = useDispatch();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const { user } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+    if (!isMdUp && onClose) onClose();
+  };
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -42,7 +50,8 @@ const Sidebar = ({ mobileOpen, onClose }) => {
       <Box sx={{ p: 1, flexGrow: 1 }}>
         <List>
           {menuItems.map((item) => {
-            const selected = location.pathname === item.path;
+            const selected =
+              location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
             return (
               <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton onClick={() => { navigate(item.path); if (!isMdUp && onClose) onClose(); }}
@@ -70,9 +79,9 @@ const Sidebar = ({ mobileOpen, onClose }) => {
           </Box>
         </Box>
 
-        <Box sx={{ mt: 2 }}> 
-          <ListItemButton onClick={() => { navigate('/logout'); if (!isMdUp && onClose) onClose(); }} sx={{ borderRadius: 1 }}>
-            <ListItemIcon><LogoutIcon /></ListItemIcon>
+        <Box sx={{ mt: 2 }}>
+          <ListItemButton onClick={handleLogout} sx={{ borderRadius: 1.5, color: 'error.main' }}>
+            <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItemButton>
         </Box>

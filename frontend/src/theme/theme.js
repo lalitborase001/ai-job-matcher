@@ -16,7 +16,7 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     background: {
-      default: '#F9FAFB', // Soft off-white canvas
+      default: '#F8FAFC',
       paper: '#ffffff',
     },
     text: {
@@ -53,12 +53,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-          border: 'none',
-          transition: 'transform 300ms ease, box-shadow 300ms ease',
+          boxShadow: 'none',
+          border: '1px solid rgba(15,23,42,0.08)',
+          transition: 'transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 8px 24px rgba(15,23,42,0.06)',
+            borderColor: 'rgba(15,23,42,0.06)',
           }
         }
       }
