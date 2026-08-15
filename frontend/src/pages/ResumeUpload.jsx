@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Button, CircularProgress, Alert, Grid } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { uploadResumeAPI, getResumesAPI, deleteResumeAPI } from '../services/resumeService';
 import PageHeader from '../components/common/PageHeader';
 import ResumeCard from '../components/resume/ResumeCard';
@@ -9,17 +11,22 @@ import Loading from '../components/common/Loading';
 import EmptyState from '../components/common/EmptyState';
 
 const ResumeUpload = () => {
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [resumes, setResumes] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback((acceptedFiles, fileRejections) => {
     setError('');
     setSuccess('');
-    
+
+    if (fileRejections?.length > 0) {
+      setError('Only PDF and DOCX files are supported.');
+      return;
+    }
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
     }
@@ -29,9 +36,9 @@ const ResumeUpload = () => {
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
-    maxFiles: 1
+    maxFiles: 1,
   });
 
   const fetchResumes = async () => {
@@ -41,34 +48,33 @@ const ResumeUpload = () => {
       setResumes(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch resumes', err);
-      setError('Unable to load resumes.');
+      setError("We couldn't load your resumes.");
     } finally {
       setIsFetching(false);
     }
   };
 
-  useEffect(() => { fetchResumes(); }, []);
+  useEffect(() => {
+    fetchResumes();
+  }, []);
 
   const handleUpload = async () => {
-    if (!file) {
-      setError('Please select a file to upload.');
-      return;
-    }
+    if (!file) return;
 
     try {
-      setIsLoading(true);
+      setIsUploading(true);
       setError('');
       setSuccess('');
-      
+
       await uploadResumeAPI(file);
       setSuccess('Resume uploaded and processed successfully!');
       setFile(null);
       fetchResumes();
     } catch (err) {
       console.error('Upload error:', err);
-      setError('Failed to upload resume. Ensure your backend is running and accepts this file type.');
+      setError("We couldn't upload your resume. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsUploading(false);
     }
   };
 
@@ -78,64 +84,82 @@ const ResumeUpload = () => {
       fetchResumes();
     } catch (err) {
       console.error('Failed to delete resume', err);
-      setError('Failed to delete resume.');
+      setError("We couldn't delete that resume. Please try again.");
     }
+  };
+
+  // Matching needs both a resume and a job, so send the user to pick a job
+  // with this resume pre-selected rather than a bare page reload to /jobs.
+  const handleMatch = (resumeId) => {
+    navigate('/jobs', { state: { preselectedResumeId: resumeId } });
   };
 
   if (isFetching) return <Loading message="Loading resumes..." />;
 
   return (
-    <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 2, p: { xs: 2, md: 0 } }}>
-      <PageHeader title="My Resumes" subtitle="Manage your resumes and use them to generate AI-powered job matches." action={<Button variant="contained">+ Upload Resume</Button>} />
+    <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
+      <PageHeader
+        title="My Resumes"
+        subtitle="Manage your resumes and use AI to match them with relevant jobs."
+      />
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess('')}>{success}</Alert>}
 
       <Paper
         {...getRootProps()}
         sx={{
-          p: 6,
+          p: { xs: 4, md: 6 },
           textAlign: 'center',
           cursor: 'pointer',
-          backgroundColor: isDragActive ? 'action.hover' : 'background.paper',
+          bgcolor: isDragActive ? 'rgba(99,102,241,0.04)' : 'background.paper',
           border: '2px dashed',
-          borderColor: isDragReject ? 'error.main' : (isDragActive ? 'primary.main' : 'grey.400'),
-          transition: 'all 0.3s ease',
-          mb: 4
+          borderColor: isDragReject ? 'error.main' : isDragActive ? 'primary.main' : 'rgba(15,23,42,0.15)',
+          transition: 'all 0.2s ease',
+          mb: file ? 2 : 4,
         }}
       >
         <input {...getInputProps()} />
-        <CloudUploadIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
-        
+        <CloudUploadOutlinedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1.5 }} />
+
         {isDragActive ? (
           <Typography variant="h6" color="primary">Drop the file here...</Typography>
         ) : (
           <>
-            <Typography variant="h6">Drag & drop your resume here</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              or click to browse files (Only PDF and DOCX accepted)
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              Drag & drop your resume here
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              or click to browse — PDF or DOCX
             </Typography>
           </>
         )}
       </Paper>
 
       {file && (
-        <Box sx={{ mb: 4 }}>
-          <Button variant="contained" onClick={handleUpload} disabled={isLoading} sx={{ py: 1.5 }}>
-            {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Upload and Parse Resume'}
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2, p: 2, borderRadius: 2, bgcolor: 'rgba(99,102,241,0.04)' }}>
+          <DescriptionOutlinedIcon color="primary" />
+          <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 600 }}>{file.name}</Typography>
+          <Button variant="contained" onClick={handleUpload} disabled={isUploading}>
+            {isUploading ? <CircularProgress size={20} color="inherit" /> : 'Upload & Parse'}
           </Button>
         </Box>
       )}
 
-      <Typography variant="h6" sx={{ mb: 2 }}>Your Resumes</Typography>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>Your Resumes</Typography>
 
       {resumes.length === 0 ? (
-        <EmptyState title="No resumes yet" subtitle="Upload your resume to start matching with jobs using AI." actionLabel="Upload Resume" onAction={() => { /* scroll to upload area */ window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+        <EmptyState
+          title="No resumes yet"
+          subtitle="Upload your resume to start matching with jobs using AI."
+          actionLabel="Upload Resume"
+          onAction={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        />
       ) : (
         <Grid container spacing={2}>
           {resumes.map((r) => (
             <Grid item xs={12} md={6} lg={4} key={r.id}>
-              <ResumeCard resume={r} onView={() => {}} onDownload={() => {}} onMatch={(id) => window.location.assign(`/jobs`)} onDelete={handleDelete} />
+              <ResumeCard resume={r} onMatch={handleMatch} onDelete={handleDelete} />
             </Grid>
           ))}
         </Grid>
