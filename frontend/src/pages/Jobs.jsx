@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { 
-  Box, Typography, Button, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, 
-  TextField, CircularProgress, Alert, Fab
+import {
+  Box, Typography, Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Alert, Fab,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { getJobsAPI, createJobAPI, deleteJobAPI } from '../services/jobService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import PageHeader from '../components/common/PageHeader';
 import JobCard from '../components/jobs/JobCard';
@@ -17,6 +16,11 @@ import EmptyState from '../components/common/EmptyState';
 
 const Jobs = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Carried over from the Resumes page when the user clicks "AI Match" on a
+  // specific resume, so we can pre-select it once they pick a job.
+  const preselectedResumeId = location.state?.preselectedResumeId;
+
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,11 +33,12 @@ const Jobs = () => {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
+      setError('');
       const data = await getJobsAPI();
       setJobs(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch jobs:', err);
-      setError('Could not load jobs. Is the backend endpoint ready?');
+      setError('Could not load jobs. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -43,8 +48,27 @@ const Jobs = () => {
     fetchJobs();
   }, []);
 
+  // Backend has no search/sort query params, so we filter and sort the
+  // already-fetched list client-side.
+  const visibleJobs = useMemo(() => {
+    const q = filters.q.trim().toLowerCase();
+    const loc = filters.location.trim().toLowerCase();
+
+    let result = jobs.filter((job) => {
+      const matchesQuery = !q || `${job.title} ${job.description} ${job.company || ''}`.toLowerCase().includes(q);
+      const matchesLocation = !loc || (job.location || '').toLowerCase().includes(loc);
+      return matchesQuery && matchesLocation;
+    });
+
+    if (filters.sort === 'recent') {
+      result = [...result].sort((a, b) => (b.id || 0) - (a.id || 0));
+    }
+
+    return result;
+  }, [jobs, filters]);
+
   const handleOpenModal = () => setIsModalOpen(true);
-  
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     reset();
@@ -63,46 +87,53 @@ const Jobs = () => {
   };
 
   const handleDelete = async (id) => {
+    const prev = jobs;
+    setJobs(jobs.filter((job) => job.id !== id));
     try {
-      setJobs(jobs.filter(job => job.id !== id));
       await deleteJobAPI(id);
     } catch (err) {
       console.error('Failed to delete job:', err);
-      fetchJobs();
+      setError('Failed to delete the job.');
+      setJobs(prev);
     }
   };
 
-  const onSearch = () => {
-    // basic client-side filtering for now
-    // if backend supports search, replace with API call
-    fetchJobs();
-  };
+  const goToJob = (id) => navigate(`/jobs/${id}`, { state: { preselectedResumeId } });
+  const goToMatch = (id) => navigate(`/jobs/${id}/match`, { state: { preselectedResumeId } });
 
   if (isLoading) return <Loading message="Loading jobs..." />;
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '80vh', p: { xs: 2, md: 3 } }}>
-      <PageHeader title="Find Your Next Opportunity" subtitle="Discover jobs that match your skills and experience." action={<Button variant="contained" onClick={() => navigate('/jobs')}>Explore</Button>} />
+    <Box sx={{ position: 'relative', minHeight: '80vh' }}>
+      <PageHeader
+        title="Find Your Next Opportunity"
+        subtitle="Discover jobs that match your skills and experience."
+      />
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>{error}</Alert>}
 
-      <JobFilters filters={filters} setFilters={setFilters} onSearch={onSearch} />
+      <JobFilters filters={filters} setFilters={setFilters} onSearch={() => {}} />
 
-      {jobs.length === 0 ? (
-        <EmptyState title="No jobs found" subtitle="Try changing your search filters." actionLabel="Refresh" onAction={() => fetchJobs()} />
+      {visibleJobs.length === 0 ? (
+        <EmptyState
+          title={jobs.length === 0 ? 'No jobs found' : 'No jobs match your filters'}
+          subtitle={jobs.length === 0 ? 'Check back soon for new listings.' : 'Try adjusting your search or location.'}
+          actionLabel="Refresh"
+          onAction={() => fetchJobs()}
+        />
       ) : (
         <Grid container spacing={3}>
-          {jobs.map((job) => (
+          {visibleJobs.map((job) => (
             <Grid item xs={12} md={6} lg={4} key={job.id}>
-              <JobCard job={job} onMatch={(id) => navigate(`/jobs/${id}/match`)} onView={(id) => navigate(`/jobs/${id}`)} />
+              <JobCard job={job} onMatch={goToMatch} onView={goToJob} />
             </Grid>
           ))}
         </Grid>
       )}
 
-      <Fab 
-        color="primary" 
-        aria-label="add" 
+      <Fab
+        color="primary"
+        aria-label="add"
         onClick={handleOpenModal}
         sx={{ position: 'fixed', bottom: 32, right: 32 }}
       >
@@ -131,9 +162,9 @@ const Jobs = () => {
               rows={6}
               fullWidth
               variant="outlined"
-              {...register('description', { 
+              {...register('description', {
                 required: 'Job description is required',
-                minLength: { value: 20, message: 'Please provide more detail (min 20 characters)' }
+                minLength: { value: 20, message: 'Please provide more detail (min 20 characters)' },
               })}
               error={!!errors.description}
               helperText={errors.description?.message}
@@ -141,11 +172,7 @@ const Jobs = () => {
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={handleCloseModal} color="inherit">Cancel</Button>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              disabled={isSubmitting}
-            >
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
               {isSubmitting ? 'Saving...' : 'Save Job'}
             </Button>
           </DialogActions>
