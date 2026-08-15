@@ -1,6 +1,9 @@
-import { AppBar, Toolbar, Typography, IconButton, Box, Avatar, Menu, MenuItem, Badge } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Box, Avatar, Menu, MenuItem, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/slices/authSlice';
@@ -30,42 +33,67 @@ const Navbar = ({ onMobileMenu }) => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-          <Box sx={{ width: 36, height: 36, bgcolor: 'primary.main', borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1 }}>
-            <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 700 }}>AI</Typography>
+          <Box sx={{ width: 34, height: 34, bgcolor: 'primary.main', borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.25 }}>
+            <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 700, fontSize: '0.8rem' }}>AI</Typography>
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>AI Resume Matcher</Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 700, color: 'text.primary', display: { xs: 'none', sm: 'block' } }}
+          >
+            AI Resume Matcher
+          </Typography>
         </Box>
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton color="inherit" aria-label="notifications">
-            <Badge badgeContent={3} color="primary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton color="inherit" aria-label="notifications">
+              <NotificationsOutlinedIcon />
+            </IconButton>
 
-          {isAuthenticated ? (
-            <>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}> 
-                <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>{user?.name || 'User'}</Typography>
-                <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
-                  <Avatar alt={user?.name || 'User'} src={user?.avatar || ''} />
-                </IconButton>
-              </Box>
-
-              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>Profile</MenuItem>
-                <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
-                <MenuItem onClick={() => { handleClose(); handleLogout(); }}>Logout</MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <Box>
-              <IconButton onClick={() => navigate('/login')} color="inherit">Login</IconButton>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1, pl: 1, cursor: 'pointer' }}
+              onClick={handleAvatarClick}
+            >
+              <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 600 }}>
+                {user?.name || 'User'}
+              </Typography>
+              <Avatar
+                alt={user?.name || 'User'}
+                src={user?.avatar || ''}
+                sx={{ width: 34, height: 34, bgcolor: 'primary.main', fontSize: '0.9rem', fontWeight: 700 }}
+              >
+                {(user?.name || 'U').charAt(0).toUpperCase()}
+              </Avatar>
             </Box>
-          )}
-        </Box>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              PaperProps={{ sx: { mt: 1, minWidth: 190, borderRadius: 2 } }}
+            >
+              <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>
+                <PersonOutlineIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} /> Profile
+              </MenuItem>
+              <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>
+                <SettingsOutlinedIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} /> Settings
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={() => { handleClose(); handleLogout(); }}>
+                <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
+                <Typography color="error.main">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+        ) : (
+          <IconButton onClick={() => navigate('/login')} color="inherit">
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>Login</Typography>
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );
