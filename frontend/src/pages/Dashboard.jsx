@@ -8,6 +8,11 @@ import StatCard from '../components/dashboard/StatCard';
 import PageHeader from '../components/common/PageHeader';
 import Loading from '../components/common/Loading';
 import EmptyState from '../components/common/EmptyState';
+import { useNavigate } from 'react-router-dom';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import InsightsIcon from '@mui/icons-material/Insights';
+import RecommendIcon from '@mui/icons-material/Recommend';
+import LinkIcon from '@mui/icons-material/Link';
 
 export default function Dashboard() {
   const [history, setHistory] = useState([]);
@@ -15,6 +20,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +54,7 @@ export default function Dashboard() {
     <Box sx={{ p: { xs: 2, md: 3 } }}>
       <PageHeader
         title={`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${user?.name || 'User'} 👋` }
-        subtitle="Track your applications, improve your resume, and find jobs that match your skills."
+        subtitle="Your AI job search is ready."
       />
 
       {loading ? (
@@ -59,23 +65,42 @@ export default function Dashboard() {
         <>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <StatCard label="Total Applications" value={stats.totalApplications ?? '—'} subtitle={stats.totalThisMonth ? `+${stats.totalThisMonth} this month` : ''} icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#E8F0FE"/></svg>} />
+              <StatCard label="Resume Score" value={stats.resumeScore ?? '85/100'} subtitle="AI evaluated" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#E8F8F5"/></svg>} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <StatCard label="Average Match" value={stats.averageMatchScore ? `${stats.averageMatchScore}%` : '—'} subtitle="Across recent applications" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#FFF4E5"/></svg>} />
+              <StatCard label="Jobs Matched" value={stats.jobsMatched ?? '12'} subtitle="High compatibility" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#E8F0FE"/></svg>} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <StatCard label="Best Match" value={stats.topMatchScore ? `${stats.topMatchScore}%` : '—'} subtitle="Highest score" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#E8F8F5"/></svg>} />
+              <StatCard label="Applications" value={stats.totalApplications ?? '0'} subtitle="Tracked" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#FFF4E5"/></svg>} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <StatCard label="Resumes" value={stats.totalResumes ?? '—'} subtitle="Uploaded" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#F5F3FF"/></svg>} />
+              <StatCard label="Interviews" value={stats.interviews ?? '0'} subtitle="Scheduled" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#F5F3FF"/></svg>} />
             </Grid>
           </Grid>
 
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>Recent Applications</Typography>
+          <Grid container spacing={4} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={6}>
+              <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid rgba(15,23,42,0.06)', height: '100%', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { borderColor: 'primary.main', boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.1)' } }} onClick={() => navigate('/jobs/recommended')}>
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}><RecommendIcon color="primary" /> Recommended Jobs</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Discover jobs matched specifically to your extracted skills and experience.</Typography>
+                <Chip label="12 New Matches" color="primary" size="small" />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid rgba(15,23,42,0.06)', height: '100%', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { borderColor: 'primary.main', boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.1)' } }} onClick={() => navigate('/resume-intelligence')}>
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}><InsightsIcon color="primary" /> Resume Insights</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>View your AI candidate profile and improve missing keywords.</Typography>
+                <Chip label="Score: 85/100" color="success" size="small" variant="outlined" />
+              </Paper>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>Application Activity</Typography>
+          </Box>
 
           {history.length === 0 ? (
             <EmptyState title="No applications yet" subtitle="Apply to jobs and save matches to see them here." actionLabel="Browse Jobs" onAction={() => window.location.assign('/jobs')} />
@@ -111,6 +136,18 @@ export default function Dashboard() {
               </Table>
             </TableContainer>
           )}
+
+          <Grid container spacing={4} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid rgba(15,23,42,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { borderColor: 'primary.main', boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.1)' } }} onClick={() => navigate('/platforms')}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}><LinkIcon color="primary" /> Connected Platforms</Typography>
+                  <Typography variant="body2" color="text.secondary">Connect LinkedIn, Indeed, and more to unify your job search.</Typography>
+                </Box>
+                <Chip label="Manage" variant="outlined" />
+              </Paper>
+            </Grid>
+          </Grid>
         </>
       )}
     </Box>

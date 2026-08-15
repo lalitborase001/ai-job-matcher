@@ -3,7 +3,9 @@ package com.jobmatcher.backend.controller;
 import com.jobmatcher.backend.dto.request.CreateJobRequest;
 import com.jobmatcher.backend.dto.response.JobResponse;
 import com.jobmatcher.backend.entity.Job;
+import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.service.JobService;
+import com.jobmatcher.backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 public class JobController {
 
     private final JobService jobService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<JobResponse> createJob(@RequestBody CreateJobRequest request){
@@ -27,6 +30,12 @@ public class JobController {
     @GetMapping
     public ResponseEntity<List<Job>> getAllJobs(){
         return ResponseEntity.ok(jobService.getAllJobs());
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<List<Job>> getRecommendedJobs(org.springframework.security.core.Authentication authentication) {
+        User user = userService.getUserByEmail(authentication.getName());
+        return ResponseEntity.ok(jobService.getRecommendedJobs(user.getId()));
     }
 
     @GetMapping("/{id}")

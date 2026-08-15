@@ -1,4 +1,5 @@
 import { AppBar, Toolbar, Typography, IconButton, Box, Avatar, Menu, MenuItem, Divider } from '@mui/material';
+import Logo from '../common/Logo';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
@@ -32,17 +33,7 @@ const Navbar = ({ onMobileMenu }) => {
           </IconButton>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-          <Box sx={{ width: 34, height: 34, bgcolor: 'primary.main', borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1.25 }}>
-            <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 700, fontSize: '0.8rem' }}>AI</Typography>
-          </Box>
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 700, color: 'text.primary', display: { xs: 'none', sm: 'block' } }}
-          >
-            AI Resume Matcher
-          </Typography>
-        </Box>
+        <Logo onClick={() => navigate('/dashboard')} />
 
         <Box sx={{ flexGrow: 1 }} />
 

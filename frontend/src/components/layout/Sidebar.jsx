@@ -1,10 +1,13 @@
 import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Divider, Avatar, Typography, useTheme } from '@mui/material';
+import Logo from '../common/Logo';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import WorkIcon from '@mui/icons-material/Work';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import LogoutIcon from '@mui/icons-material/Logout';
+import InsightsIcon from '@mui/icons-material/Insights';
+import RecommendIcon from '@mui/icons-material/Recommend';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useSelector, useDispatch } from 'react-redux';
@@ -29,7 +32,9 @@ const Sidebar = ({ mobileOpen, onClose }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'My Resumes', icon: <DescriptionIcon />, path: '/resumes' },
+    { text: 'Resume Intelligence', icon: <InsightsIcon />, path: '/resume-intelligence' },
     { text: 'Jobs', icon: <WorkIcon />, path: '/jobs' },
+    { text: 'Recommended Jobs', icon: <RecommendIcon />, path: '/jobs/recommended' },
     { text: 'Applications', icon: <ListAltIcon />, path: '/applications' },
     { text: 'AI Match', icon: <AutoAwesomeIcon />, path: '/match' },
   ];
@@ -37,12 +42,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar sx={{ alignItems: 'center', gap: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-          <Box sx={{ width: 40, height: 40, bgcolor: 'primary.main', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 1 }}>
-            <Typography variant="subtitle2" sx={{ color: '#fff', fontWeight: 700 }}>AI</Typography>
-          </Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>AI Resume</Typography>
-        </Box>
+        <Logo onClick={() => navigate('/dashboard')} />
       </Toolbar>
 
       <Box sx={{ mb: 2 }} />

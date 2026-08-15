@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class AiController {
 
     private final AiService aiService;
+    private final CandidateProfileService candidateProfileService;
 
     /**
      * Analyze a resume against a job description using
@@ -31,6 +32,30 @@ public class AiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @PostMapping("/resume-intelligence/{resumeId}")
+    public ResponseEntity<com.jobmatcher.backend.entity.CandidateProfile> generateResumeIntelligence(
+            @PathVariable Long resumeId) throws Exception {
+        
+        com.jobmatcher.backend.entity.CandidateProfile profile = 
+                candidateProfileService.generateProfile(resumeId);
+                
+        return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/resume-intelligence/{resumeId}")
+    public ResponseEntity<com.jobmatcher.backend.entity.CandidateProfile> getResumeIntelligence(
+            @PathVariable Long resumeId) {
+            
+        com.jobmatcher.backend.entity.CandidateProfile profile = 
+                candidateProfileService.getProfileByResumeId(resumeId);
+                
+        if (profile == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(profile);
     }
 
 }

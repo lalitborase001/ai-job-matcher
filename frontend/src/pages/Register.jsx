@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { Container, Paper, Typography, TextField, Button, Box, Alert, Link } from '@mui/material';
 import { registerAPI } from '../services/authService';
+import Logo from '../components/common/Logo';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -46,6 +47,9 @@ const Register = () => {
   return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ mb: 3 }}>
+          <Logo variant="large" />
+        </Box>
         <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
           Create an Account
         </Typography>

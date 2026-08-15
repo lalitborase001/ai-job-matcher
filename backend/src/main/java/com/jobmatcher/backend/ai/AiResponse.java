@@ -25,4 +25,5 @@ public class AiResponse {
 
     private List<String> interviewQuestions;
 
+    private String coverLetter;
 }

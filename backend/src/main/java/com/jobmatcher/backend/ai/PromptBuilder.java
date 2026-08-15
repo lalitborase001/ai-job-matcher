@@ -21,7 +21,8 @@ Use this EXACT JSON structure:
   "strengths": ["Java", "Spring Boot", "REST APIs"],
   "missingSkills": ["JPA", "Hibernate"],
   "improvements": ["Fix the future date typo on the hackathon", "Add metrics to bullet points"],
-  "interviewQuestions": ["What is the difference between JDBC and Spring Data JPA?", "Explain layered architecture."]
+  "interviewQuestions": ["What is the difference between JDBC and Spring Data JPA?", "Explain layered architecture."],
+  "coverLetter": "Provide a personalized 3-paragraph cover letter based on the resume strengths and job requirements."
 }
 
 Resume:

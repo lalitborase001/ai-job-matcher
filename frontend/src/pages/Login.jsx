@@ -5,6 +5,7 @@ import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { Container, Paper, Typography, TextField, Button, Box, Alert, Link } from '@mui/material';
 import { setCredentials } from '../redux/slices/authSlice';
 import { loginAPI, getCurrentUserAPI } from '../services/authService';
+import Logo from '../components/common/Logo';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -48,6 +49,9 @@ const Login = () => {
   return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ mb: 3 }}>
+          <Logo variant="large" />
+        </Box>
         <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
           Sign In
         </Typography>

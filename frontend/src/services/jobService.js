@@ -10,6 +10,11 @@ export const getJobByIdAPI = async (id) => {
   return response.data;
 };
 
+export const getRecommendedJobsAPI = async () => {
+  const response = await axiosInstance.get('/api/jobs/recommended');
+  return response.data;
+};
+
 export const createJobAPI = async (jobData) => {
   const response = await axiosInstance.post('/api/jobs', jobData);
   return response.data;

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
 import PageHeader from '../components/common/PageHeader';
+import LinkIcon from '@mui/icons-material/Link';
 
 const Settings = () => {
   const { mode, toggleTheme } = useThemeContext();
@@ -57,6 +58,20 @@ const Settings = () => {
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1, ml: 4 }}>
             Receive updates about your job matches and application status.
           </Typography>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 4 }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LinkIcon color="primary" /> Integrations
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Connect your job boards (LinkedIn, Naukri, etc.) to discover more jobs.
+          </Typography>
+          <Button variant="outlined" onClick={() => navigate('/platforms')}>
+            Manage Connected Platforms
+          </Button>
         </CardContent>
       </Card>
 

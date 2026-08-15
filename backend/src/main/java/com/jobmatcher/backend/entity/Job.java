@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,13 @@ public class Job {
     private String skills;
     private String description;
     private String location;
+
+    // Added fields for unified job search architecture
+    private String source;
+    private String sourceUrl;
+    private String employmentType;
+    private String experience;
+    private LocalDateTime postedDate;
 
     @OneToMany(mappedBy = "job" , cascade = CascadeType.ALL)
     @JsonIgnore

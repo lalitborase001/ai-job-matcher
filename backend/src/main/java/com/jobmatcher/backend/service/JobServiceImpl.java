@@ -66,4 +66,11 @@ public class JobServiceImpl implements JobService{
     public void deleteJob(Long id) {
         jobRepository.deleteById(id);
     }
+
+    @Override
+    public List<Job> getRecommendedJobs(Long userId) {
+        // Simple mock recommendation: just return all jobs for now.
+        // In a real scenario, this would use candidate profile data to rank jobs.
+        return jobRepository.findAll();
+    }
 }

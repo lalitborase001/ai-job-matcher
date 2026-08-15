@@ -15,6 +15,7 @@ public interface JobService {
 
     Job updateJob(Long id, Job job) throws Exception;
     List<Job> getAllJobs();
+    List<Job> getRecommendedJobs(Long userId);
 
     void deleteJob(Long id);
 
