@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from 'react';
 import PageTransition from '../common/PageTransition';
 import { setCredentials } from '../../redux/slices/authSlice';
+import { getCurrentUserAPI } from '../../services/authService';
 
 const MainLayout = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -14,28 +15,14 @@ const MainLayout = () => {
   const handleDrawerToggle = () => setMobileOpen((o) => !o);
 
   useEffect(() => {
-    // If token exists but user not loaded, try to decode token and fetch user info
+    // If token exists but user not loaded yet (e.g. page refresh), fetch it.
     const loadUser = async () => {
       const token = localStorage.getItem('token');
-      if (!token) return;
-      if (user) return; // already loaded
+      if (!token || user) return;
 
-      try {
-        const jwtDecode = (await import('jwt-decode')).default;
-        const decoded = jwtDecode(token);
-        const email = decoded?.sub || decoded?.email || decoded?.subject || null;
-        if (!email) return;
-
-        const axiosInstance = (await import('../../api/axiosInstance')).default;
-        const resp = await axiosInstance.get('/api/users');
-        const users = resp.data || [];
-        const found = users.find((u) => String(u.email).toLowerCase() === String(email).toLowerCase());
-        if (found) {
-          dispatch(setCredentials({ token, user: found }));
-        }
-      } catch (err) {
-        // ignore errors; user will be treated as unauthenticated display name 'User'
-        console.error('Failed to load user info', err);
+      const found = await getCurrentUserAPI(token);
+      if (found) {
+        dispatch(setCredentials({ token, user: found }));
       }
     };
 
@@ -47,7 +34,16 @@ const MainLayout = () => {
       <Navbar onMobileMenu={handleDrawerToggle} />
       {isAuthenticated && <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />}
 
-      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          minWidth: 0,
+          p: { xs: 2, md: 3 },
+          bgcolor: 'background.default',
+          minHeight: '100vh',
+        }}
+      >
         <Toolbar />
         <PageTransition>
           <Outlet />
