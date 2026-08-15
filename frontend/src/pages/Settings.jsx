@@ -1,31 +1,78 @@
-import React from 'react';
-import { Box, Paper, Typography, FormControlLabel, Switch, Stack } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Box, Card, CardContent, Typography, FormControlLabel, Switch, Stack, Divider, Button } from '@mui/material';
+import { useThemeContext } from '../context/ThemeContext';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/slices/authSlice';
+import PageHeader from '../components/common/PageHeader';
 
 const Settings = () => {
-  const [dark, setDark] = React.useState(false);
+  const { mode, toggleTheme } = useThemeContext();
   const [emailNotif, setEmailNotif] = React.useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('emailNotif');
+    if (saved !== null) {
+      setEmailNotif(saved === 'true');
+    }
+  }, []);
+
+  const handleEmailToggle = (e) => {
+    const checked = e.target.checked;
+    setEmailNotif(checked);
+    localStorage.setItem('emailNotif', checked);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Settings</Typography>
+    <Box sx={{ maxWidth: 800, mx: 'auto', p: { xs: 2, md: 3 } }}>
+      <PageHeader title="Settings" subtitle="Manage your preferences and account settings." />
 
-        <Stack spacing={2}>
+      <Card sx={{ mb: 4 }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3 }}>Appearance</Typography>
           <FormControlLabel
-            control={<Switch checked={dark} onChange={(e) => setDark(e.target.checked)} />}
-            label="Dark Mode"
+            control={<Switch checked={mode === 'dark'} onChange={toggleTheme} color="primary" />}
+            label={<Typography variant="body1">Dark Mode</Typography>}
           />
-
-          <FormControlLabel
-            control={<Switch checked={emailNotif} onChange={(e) => setEmailNotif(e.target.checked)} />}
-            label="Email Notifications"
-          />
-
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            These are placeholder settings. Hook them up to your preferences store as needed.
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, ml: 4 }}>
+            Adjust the appearance of the application.
           </Typography>
-        </Stack>
-      </Paper>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 4 }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3 }}>Notifications</Typography>
+          <FormControlLabel
+            control={<Switch checked={emailNotif} onChange={handleEmailToggle} color="primary" />}
+            label={<Typography variant="body1">Email Notifications</Typography>}
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, ml: 4 }}>
+            Receive updates about your job matches and application status.
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3 }}>Account</Typography>
+          <Stack direction="row" spacing={2}>
+            <Button variant="outlined" onClick={() => navigate('/profile')}>
+              View Profile
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
     </Box>
   );
 };

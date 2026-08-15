@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper, Avatar, Typography, Grid } from '@mui/material';
+import { Box, Card, CardContent, Avatar, Typography, Grid, Divider, Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 const Profile = () => {
@@ -8,21 +8,48 @@ const Profile = () => {
   const email = user?.email || '';
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item>
-            <Avatar sx={{ width: 86, height: 86, bgcolor: 'primary.main', fontSize: 28 }}>{(name && name.charAt(0)) || 'U'}</Avatar>
+    <Box sx={{ maxWidth: 800, mx: 'auto', p: { xs: 2, md: 3 } }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>Profile</Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Manage your personal information.
+      </Typography>
+
+      <Card>
+        <CardContent sx={{ p: 4 }}>
+          <Grid container spacing={4} alignItems="flex-start">
+            <Grid item>
+              <Avatar sx={{ width: 96, height: 96, bgcolor: 'primary.main', fontSize: 32, fontWeight: 700 }}>
+                {(name && name.charAt(0)) || 'U'}
+              </Avatar>
+            </Grid>
+            <Grid item xs>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>{name}</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>{email}</Typography>
+              
+              <Divider sx={{ mb: 3 }} />
+              
+              <Typography variant="h6" sx={{ mb: 2 }}>Profile Information</Typography>
+              <Grid container spacing={2} sx={{ mb: 4 }}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Full Name</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>{name}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Email Address</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>{email}</Typography>
+                </Grid>
+              </Grid>
+
+              <Button variant="outlined" disabled>
+                Edit Profile
+              </Button>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                Profile editing is currently managed by your administrator.
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>{name}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{email}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              This is your profile page. Add profile fields and edit functionality here.
-            </Typography>
-          </Grid>
-        </Grid>
-      </Paper>
+        </CardContent>
+      </Card>
     </Box>
   );
 };
