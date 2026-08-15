@@ -1,21 +1,22 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-
-const getLabelForScore = (score) => {
-  if (score >= 85) return 'Excellent Match';
-  if (score >= 70) return 'Good Match';
-  if (score >= 40) return 'Moderate Match';
-  return 'Weak Match';
-};
+import { getScoreLabel, getScoreColor } from '../../utils/matchScore';
 
 const MatchScore = ({ score = 0, size = 160, thickness = 8 }) => {
   const clamped = Math.max(0, Math.min(100, Number(score) || 0));
-  const label = getLabelForScore(clamped);
+  const label = getScoreLabel(clamped);
+  const color = getScoreColor(clamped);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-        <CircularProgress variant="determinate" value={clamped} size={size} thickness={thickness} />
+        <CircularProgress
+          variant="determinate"
+          value={clamped}
+          size={size}
+          thickness={thickness}
+          color={color === 'default' ? 'primary' : color}
+        />
         <Box sx={{
           top: 0,
           left: 0,
