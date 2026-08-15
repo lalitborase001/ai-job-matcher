@@ -6,6 +6,7 @@ import { getResumesAPI } from '../services/resumeService';
 import { generateMatchAPI } from '../services/matchService';
 import MatchScore from '../components/match/MatchScore';
 import ResumeSelector from '../components/resume/ResumeSelector';
+import AiSummary from '../components/matching/AiSummary';
 import EmptyState from '../components/common/EmptyState';
 import Loading from '../components/common/Loading';
 
@@ -118,11 +119,14 @@ const JobDetails = () => {
                 </Typography>
               )}
 
-              <Box sx={{ my: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ my: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 {isMatching ? (
                   <CircularProgress />
                 ) : matchResult ? (
-                  <MatchScore score={matchResult.matchPercentage} />
+                  <>
+                    <MatchScore score={matchResult.matchPercentage} />
+                    <AiSummary summary={matchResult.summary} />
+                  </>
                 ) : (
                   <EmptyState title="No preview yet" subtitle="Generate a quick AI match for this job." />
                 )}

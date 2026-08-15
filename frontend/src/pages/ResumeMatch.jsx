@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Box, Typography, Button, Card, CardContent, CircularProgress, 
-  Alert, Select, MenuItem, InputLabel, FormControl, Grid, Chip, 
-  Divider, List, ListItem, ListItemIcon, ListItemText, Grow, Snackbar
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Box, Typography, Button, Card, CardContent, CircularProgress,
+  Alert, Grid, Divider, Grow, Snackbar,
 } from '@mui/material';
-import MatchScore from '../components/match/MatchScore';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+
+import MatchScore from '../components/match/MatchScore';
+import ResumeSelector from '../components/resume/ResumeSelector';
+import AiSummary from '../components/matching/AiSummary';
+import StrengthsCard from '../components/matching/StrengthsCard';
+import MissingSkillsCard from '../components/matching/MissingSkillsCard';
+import ImprovementsCard from '../components/matching/ImprovementsCard';
+import InterviewQuestionsCard from '../components/matching/InterviewQuestionsCard';
+import Loading from '../components/common/Loading';
+
 import { getResumesAPI } from '../services/resumeService';
 import { generateMatchAPI } from '../services/matchService';
 import { applyForJobAPI } from '../services/applicationService';
@@ -17,51 +23,39 @@ import { applyForJobAPI } from '../services/applicationService';
 const ResumeMatch = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const preselectedResumeId = location.state?.preselectedResumeId;
 
   const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState('');
   const [isLoadingResumes, setIsLoadingResumes] = useState(true);
-  
+
   const [matchResult, setMatchResult] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const handleSaveMatch = async () => {
-    try {
-      setIsSaving(true);
-      
-
-      await applyForJobAPI(
-        jobId, 
-        selectedResume, 
-        matchResult.matchPercentage
-      );
-      
-      setSaveSuccess(true);
-    } catch (err) {
-      console.error("Failed to save match:", err);
-      setError("Failed to save the match to your history.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   useEffect(() => {
     const fetchResumes = async () => {
       try {
         setIsLoadingResumes(true);
         const data = await getResumesAPI();
-        setResumes(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+        setResumes(list);
+
+        if (preselectedResumeId && list.some((r) => r.id === preselectedResumeId)) {
+          setSelectedResume(preselectedResumeId);
+        }
       } catch (err) {
-        console.error("Failed to fetch resumes:", err);
+        console.error('Failed to fetch resumes:', err);
         setError('Failed to load resumes. Please try again.');
       } finally {
         setIsLoadingResumes(false);
       }
     };
     fetchResumes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMatch = async () => {
@@ -73,190 +67,128 @@ const ResumeMatch = () => {
     try {
       setError('');
       setIsMatching(true);
-      // selectedResume now strictly holds the valid database ID
+      setMatchResult(null);
       const result = await generateMatchAPI(jobId, selectedResume);
       setMatchResult(result);
     } catch (err) {
-      console.error("Match generation failed:", err);
-      setError('AI Match failed. Check your Spring Boot console for Gemini API errors.');
+      console.error('Match generation failed:', err);
+      setError("We couldn't generate the AI match. Please try again.");
     } finally {
       setIsMatching(false);
     }
   };
 
-  if (isLoadingResumes) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const handleSaveMatch = async () => {
+    try {
+      setIsSaving(true);
+      await applyForJobAPI(jobId, selectedResume, matchResult.matchPercentage);
+      setSaveSuccess(true);
+    } catch (err) {
+      console.error('Failed to save match:', err);
+      setError('Failed to save the match to your history.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoadingResumes) return <Loading message="Loading resumes..." />;
 
   return (
     <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
-      <Button 
-        startIcon={<ArrowBackIcon />} 
-        onClick={() => navigate('/jobs')}
-        sx={{ mb: 3 }}
-      >
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/jobs')} sx={{ mb: 3 }}>
         Back to Jobs
       </Button>
 
-      <Typography variant="h4" gutterBottom>
-        AI Resume Matcher
+      <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <AutoAwesomeIcon color="primary" /> AI Resume Match
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Select a resume to compare against this job description. Our Gemini AI will extract skills and calculate your fit.
+        Analyze how well your resume matches this job.
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>{error}</Alert>}
 
-      <Card sx={{ mb: 4, p: 2 }}>
-        <Grid container spacing={3} sx={{ alignItems: 'center' }}>
-          <Grid item xs={12} md={8}>
-            <FormControl fullWidth>
-              <InputLabel id="resume-select-label">Select Resume</InputLabel>
-              <Select
-                labelId="resume-select-label"
-                value={selectedResume}
-                label="Select Resume"
-                onChange={(e) => setSelectedResume(e.target.value)}
+      <Card sx={{ mb: 4 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Grid container spacing={3} sx={{ alignItems: 'center' }}>
+            <Grid item xs={12} md={8}>
+              <ResumeSelector resumes={resumes} value={selectedResume} onChange={setSelectedResume} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                startIcon={isMatching ? <CircularProgress size={20} color="inherit" /> : <AutoAwesomeIcon />}
+                onClick={handleMatch}
+                disabled={isMatching || !selectedResume}
+                sx={{ py: 1.5 }}
               >
-                {resumes.length === 0 ? (
-                  <MenuItem disabled value="">No resumes found. Upload one first!</MenuItem>
-                ) : (
-                  resumes.map((resume) => (
-                    // Now safely using the 'id' field we just added to the Java backend
-                    <MenuItem key={resume.id} value={resume.id}>
-                      {resume.fileName}
-                    </MenuItem>
-                  ))
-                )}
-              </Select>
-            </FormControl>
+                {isMatching ? 'Analyzing...' : 'Generate AI Match'}
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              size="large"
-              startIcon={isMatching ? <CircularProgress size={20} color="inherit" /> : <AutoAwesomeIcon />}
-              onClick={handleMatch}
-              disabled={isMatching || !selectedResume}
-              sx={{ py: 1.5 }}
-            >
-              {isMatching ? 'AI Analyzing...' : 'Generate Match'}
-            </Button>
-          </Grid>
-        </Grid>
+        </CardContent>
       </Card>
 
-      {/* RENDER THE AI RESPONSE BASED EXACTLY ON AiResponse.java */}
       {matchResult && (
         <Grow in={!!matchResult} timeout={400}>
-          <Card elevation={3}>
-              <CardContent sx={{ p: 4 }}>
-             
-                {/* MATCH PERCENTAGE */}
-                <Box sx={{ textAlign: 'center', mb: 4 }}>
-                  <Typography variant="h5" gutterBottom>Match Score</Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                    <MatchScore score={matchResult.matchPercentage || 0} />
-                  </Box>            
+          <Card>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ textAlign: 'center', mb: 4 }}>
+                <Typography variant="h5" gutterBottom>Match Score</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+                  <MatchScore score={matchResult.matchPercentage || 0} />
                 </Box>
+              </Box>
 
-            <Divider sx={{ my: 3 }} />
-            
-            {/* AI SUMMARY */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" color="primary" gutterBottom>
-                AI Summary
-              </Typography>
-              <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
-                "{matchResult.summary}"
-              </Typography>
-            </Box>
+              <Divider sx={{ my: 3 }} />
 
-            <Divider sx={{ my: 3 }} />
+              <AiSummary summary={matchResult.summary} />
 
-            {/* STRENGTHS & MISSING SKILLS */}
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" color="success.main" gutterBottom>
-                  Strengths
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {matchResult.strengths?.map((strength, index) => (
-                    <Chip key={index} label={strength} color="success" variant="outlined" />
-                  ))}
-                </Box>
+              <Divider sx={{ my: 3 }} />
+
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                  <StrengthsCard strengths={matchResult.strengths} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <MissingSkillsCard missingSkills={matchResult.missingSkills} />
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" color="error.main" gutterBottom>
-                  Missing Skills
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {matchResult.missingSkills?.map((skill, index) => (
-                    <Chip key={index} label={skill} color="error" variant="outlined" />
-                  ))}
-                </Box>
-              </Grid>
-            </Grid>
+              <Divider sx={{ my: 3 }} />
 
-            <Divider sx={{ my: 3 }} />
-
-            {/* IMPROVEMENTS & INTERVIEW QUESTIONS */}
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" color="warning.main" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LightbulbIcon sx={{ mr: 1 }} /> Suggested Improvements
-                </Typography>
-                <List dense>
-                  {matchResult.improvements?.map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ mb: 1 }}>
-                      <ListItemText primary={`• ${item}`} />
-                    </ListItem>
-                  ))}
-                </List>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                  <ImprovementsCard improvements={matchResult.improvements} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <InterviewQuestionsCard questions={matchResult.interviewQuestions} />
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" color="info.main" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <QuestionAnswerIcon sx={{ mr: 1 }} /> Prep Questions
-                </Typography>
-                <List dense>
-                  {matchResult.interviewQuestions?.map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ mb: 1 }}>
-                      <ListItemText primary={`• ${item}`} />
-                    </ListItem>
-                  ))}
-                </List>
-              </Grid>
-            </Grid>
-            {/* Add this right before the closing </CardContent> tag */}
-            <Divider sx={{ my: 3 }} />
-            
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button 
-                variant="contained" 
-                color="success" 
-                size="large"
-                onClick={handleSaveMatch}
-                disabled={isSaving || saveSuccess}
-              >
-                {saveSuccess ? 'Saved to History!' : (isSaving ? 'Saving...' : 'Save Match & Apply')}
-              </Button>
-            </Box>     
-          </CardContent>
-        </Card>
+              <Divider sx={{ my: 3 }} />
+
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="large"
+                  onClick={handleSaveMatch}
+                  disabled={isSaving || saveSuccess}
+                >
+                  {saveSuccess ? 'Saved to History!' : isSaving ? 'Saving...' : 'Save Match & Apply'}
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
         </Grow>
       )}
-      {/* Success Popup */}
-      <Snackbar 
-        open={saveSuccess} 
-        autoHideDuration={4000} 
+
+      <Snackbar
+        open={saveSuccess}
+        autoHideDuration={4000}
         onClose={() => setSaveSuccess(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
