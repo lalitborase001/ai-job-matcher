@@ -37,7 +37,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
         </Box>
       </Toolbar>
 
-      <Divider />
+      <Box sx={{ mb: 2 }} />
 
       <Box sx={{ p: 1, flexGrow: 1 }}>
         <List>
@@ -49,7 +49,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                   selected={selected}
                   sx={{
                     borderRadius: 1.5,
-                    ...(selected && { bgcolor: 'primary.light', color: 'primary.main' }),
+                    ...(selected && { bgcolor: 'rgba(99, 102, 241, 0.1)', color: 'primary.main', fontWeight: 700 }),
                   }}
                 >
                   <ListItemIcon sx={{ color: selected ? 'primary.main' : 'text.secondary' }}>{item.icon}</ListItemIcon>
@@ -61,7 +61,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
         </List>
       </Box>
 
-      <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Avatar sx={{ width: 40, height: 40 }}>{(user?.name && user.name.charAt(0)) || 'U'}</Avatar>
           <Box>

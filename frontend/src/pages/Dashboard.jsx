@@ -80,21 +80,21 @@ export default function Dashboard() {
           {history.length === 0 ? (
             <EmptyState title="No applications yet" subtitle="Apply to jobs and save matches to see them here." actionLabel="Browse Jobs" onAction={() => window.location.assign('/jobs')} />
           ) : (
-            <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
+            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 4, border: '1px solid rgba(15,23,42,0.06)', overflow: 'hidden' }}>
               <Table sx={{ minWidth: 650 }}>
-                <TableHead sx={{ backgroundColor: '#f8fafc' }}>
+                <TableHead sx={{ backgroundColor: '#F1F5F9' }}>
                   <TableRow>
-                    <TableCell><strong>Company</strong></TableCell>
-                    <TableCell><strong>Job</strong></TableCell>
-                    <TableCell><strong>Resume</strong></TableCell>
-                    <TableCell align="center"><strong>AI Match</strong></TableCell>
-                    <TableCell align="center"><strong>Status</strong></TableCell>
-                    <TableCell align="right"><strong>Date</strong></TableCell>
+                    <TableCell sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>Company</TableCell>
+                    <TableCell sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>Job</TableCell>
+                    <TableCell sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>Resume</TableCell>
+                    <TableCell align="center" sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>AI Match</TableCell>
+                    <TableCell align="center" sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>Status</TableCell>
+                    <TableCell align="right" sx={{ color: '#64748B', fontSize: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, py: 2, px: 3 }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {history.map((row) => (
-                    <TableRow key={row.applicationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableRow hover key={row.applicationId} sx={{ '& td, & th': { borderBottom: '1px solid rgba(15,23,42,0.04)', py: 2, px: 3 }, '&:last-child td, &:last-child th': { border: 0 } }}>
                       <TableCell sx={{ fontWeight: 600 }}>{row.company}</TableCell>
                       <TableCell>{row.jobTitle}</TableCell>
                       <TableCell>{row.resumeFileName}</TableCell>
