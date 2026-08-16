@@ -150,9 +150,9 @@ const ResumeUpload = () => {
 
       {resumes.length === 0 ? (
         <EmptyState
-          title="No resumes yet"
-          subtitle="Upload your resume to start matching with jobs using AI."
-          actionLabel="Upload Resume"
+          title="Your career starts with a strong resume."
+          subtitle="Upload your resume and let AI match you with relevant roles."
+          actionLabel="Upload Your Resume"
           onAction={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         />
       ) : (

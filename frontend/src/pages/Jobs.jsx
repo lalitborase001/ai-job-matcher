@@ -116,7 +116,7 @@ const Jobs = () => {
 
       {visibleJobs.length === 0 ? (
         <EmptyState
-          title={jobs.length === 0 ? 'No jobs found' : 'No jobs match your filters'}
+          title={jobs.length === 0 ? 'No opportunities match your search yet.' : 'No opportunities match your filters.'}
           subtitle={jobs.length === 0 ? 'Check back soon for new listings.' : 'Try adjusting your search or location.'}
           actionLabel="Refresh"
           onAction={() => fetchJobs()}

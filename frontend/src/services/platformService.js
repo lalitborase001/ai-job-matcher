@@ -1,23 +1,19 @@
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
-const API_URL = 'http://localhost:8080/api/platforms';
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return { headers: { Authorization: `Bearer ${token}` } };
-};
-
+// Uses the shared axiosInstance (same JWT-attach + 401-handling interceptor
+// as every other service) instead of a standalone axios call with its own
+// duplicated auth-header logic.
 export const getUserPlatformsAPI = async () => {
-  const response = await axios.get(API_URL, getAuthHeader());
+  const response = await axiosInstance.get('/api/platforms');
   return response.data;
 };
 
 export const connectPlatformAPI = async (platformName) => {
-  const response = await axios.post(`${API_URL}/${platformName}/connect`, {}, getAuthHeader());
+  const response = await axiosInstance.post(`/api/platforms/${platformName}/connect`, {});
   return response.data;
 };
 
 export const disconnectPlatformAPI = async (platformName) => {
-  const response = await axios.post(`${API_URL}/${platformName}/disconnect`, {}, getAuthHeader());
+  const response = await axiosInstance.post(`/api/platforms/${platformName}/disconnect`, {});
   return response.data;
 };

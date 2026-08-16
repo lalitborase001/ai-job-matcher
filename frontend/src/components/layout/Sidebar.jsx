@@ -71,15 +71,19 @@ const Sidebar = ({ mobileOpen, onClose }) => {
       </Box>
 
       <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          onClick={() => { navigate('/profile'); if (!isMdUp && onClose) onClose(); }}
+          sx={{
+            display: 'flex', alignItems: 'center', gap: 1.25, p: 1, borderRadius: 1.5,
+            cursor: 'pointer', transition: 'background-color 0.15s',
+            '&:hover': { bgcolor: 'rgba(15,23,42,0.04)' },
+          }}
+        >
           <Avatar sx={{ width: 40, height: 40 }}>{(user?.name && user.name.charAt(0)) || 'U'}</Avatar>
-          <Box>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>{user?.name || 'User'}</Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>View profile</Typography>
-          </Box>
+          <Typography variant="body2" sx={{ fontWeight: 700 }} noWrap>{user?.name || 'User'}</Typography>
         </Box>
 
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 1 }}>
           <ListItemButton onClick={handleLogout} sx={{ borderRadius: 1.5, color: 'error.main' }}>
             <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
             <ListItemText primary="Logout" />

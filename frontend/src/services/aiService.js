@@ -1,23 +1,16 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api/ai';
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return { headers: { Authorization: `Bearer ${token}` } };
-};
+import axiosInstance from '../api/axiosInstance';
 
 export const generateResumeIntelligence = async (resumeId) => {
-  const response = await axios.post(`${API_URL}/resume-intelligence/${resumeId}`, {}, getAuthHeader());
+  const response = await axiosInstance.post(`/api/ai/resume-intelligence/${resumeId}`, {});
   return response.data;
 };
 
 export const getResumeIntelligence = async (resumeId) => {
-  const response = await axios.get(`${API_URL}/resume-intelligence/${resumeId}`, getAuthHeader());
+  const response = await axiosInstance.get(`/api/ai/resume-intelligence/${resumeId}`);
   return response.data;
 };
 
 export const analyzeResumeJobMatch = async (resumeId, jobId) => {
-  const response = await axios.post(`${API_URL}/analyze/${resumeId}/${jobId}`, {}, getAuthHeader());
+  const response = await axiosInstance.post(`/api/ai/analyze/${resumeId}/${jobId}`, {});
   return response.data;
 };

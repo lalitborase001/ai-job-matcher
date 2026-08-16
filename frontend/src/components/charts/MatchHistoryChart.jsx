@@ -8,12 +8,18 @@ export default function MatchHistoryChart({ data }) {
 
   // Format data for the chart: 
   // Reverse it so the oldest applications are on the left and newest on the right.
-  const chartData = [...data].reverse().map(item => ({
-    name: item.company.length > 10 ? item.company.substring(0, 10) + '...' : item.company,
-    fullName: item.company,
-    score: item.matchScore,
-    role: item.jobTitle
-  }));
+  const chartData = [...data].reverse().map(item => {
+    // SAFEGUARDS: Fallback to 'Unknown' if the database returns null
+    const companyName = item.company || 'Unknown';
+    const jobRole = item.jobTitle || 'Role';
+    
+    return {
+      name: companyName.length > 10 ? companyName.substring(0, 10) + '...' : companyName,
+      fullName: companyName,
+      score: item.matchScore || 0,
+      role: jobRole
+    };
+  });
 
   // A custom HTML tooltip that matches your SaaS theme
   const CustomTooltip = ({ active, payload }) => {
