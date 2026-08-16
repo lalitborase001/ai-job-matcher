@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Box, Grid } from '@mui/material';
 import { getMyApplicationsAPI } from '../services/applicationService';
 import axiosInstance from '../api/axiosInstance'; 
-
+import MatchHistoryChart from '../components/charts/MatchHistoryChart';
 import StatCard from '../components/dashboard/StatCard';
 import PageHeader from '../components/common/PageHeader';
 import Loading from '../components/common/Loading';
@@ -63,7 +63,7 @@ export default function Dashboard() {
         <EmptyState title="Something went wrong" subtitle={error} actionLabel="Try Again" onAction={() => window.location.reload()} />
       ) : (
         <>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={3} sx={{ mb: 5 }}>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard label="Resume Score" value={stats.resumeScore ?? '85/100'} subtitle="AI evaluated" icon={<svg width="20" height="20" fill="none"><rect width="20" height="20" rx="4" fill="#E8F8F5"/></svg>} />
             </Grid>
