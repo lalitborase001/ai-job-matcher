@@ -23,11 +23,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String name) throws Exception {
-        return null;
-    }
-
-    @Override
     public UserResponse saveUser(CreateUserRequest request) {
 
         User user = new User();

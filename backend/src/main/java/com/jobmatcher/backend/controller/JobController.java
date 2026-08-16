@@ -34,7 +34,7 @@ public class JobController {
 
     @GetMapping("/recommended")
     public ResponseEntity<List<Job>> getRecommendedJobs(org.springframework.security.core.Authentication authentication) throws Exception {
-        User user = userService.getUserByEmail(authentication.getName());
+        User user = userService.findUserByEmail(authentication.getName());
         return ResponseEntity.ok(jobService.getRecommendedJobs(user.getId()));
     }
 

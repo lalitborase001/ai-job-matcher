@@ -21,5 +21,4 @@ public interface UserService {
 
     User findUserByEmail(String email) throws Exception;
 
-    User getUserByEmail(String name) throws Exception;
 }
