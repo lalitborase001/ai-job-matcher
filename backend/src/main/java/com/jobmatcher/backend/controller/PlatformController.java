@@ -21,15 +21,15 @@ public class PlatformController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<ConnectedPlatform>> getUserPlatforms(Authentication authentication) {
-        User user = userService.getUserByEmail(authentication.getName());
+    public ResponseEntity<List<ConnectedPlatform>> getUserPlatforms(Authentication authentication) throws Exception {
+        User user = userService.getUserByEmail(authentication.getName()) ;
         return ResponseEntity.ok(platformIntegrationService.getUserPlatforms(user.getId()));
     }
 
     @PostMapping("/{platformName}/connect")
     public ResponseEntity<ConnectedPlatform> connectPlatform(
             Authentication authentication, 
-            @PathVariable String platformName) {
+            @PathVariable String platformName) throws Exception {
         User user = userService.getUserByEmail(authentication.getName());
         return ResponseEntity.ok(platformIntegrationService.connectPlatform(user.getId(), platformName));
     }
@@ -37,7 +37,7 @@ public class PlatformController {
     @PostMapping("/{platformName}/disconnect")
     public ResponseEntity<ConnectedPlatform> disconnectPlatform(
             Authentication authentication, 
-            @PathVariable String platformName) {
+            @PathVariable String platformName) throws Exception{
         User user = userService.getUserByEmail(authentication.getName());
         return ResponseEntity.ok(platformIntegrationService.disconnectPlatform(user.getId(), platformName));
     }
