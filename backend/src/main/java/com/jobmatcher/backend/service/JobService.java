@@ -2,6 +2,7 @@ package com.jobmatcher.backend.service;
 
 import com.jobmatcher.backend.dto.request.CreateJobRequest;
 import com.jobmatcher.backend.dto.response.JobResponse;
+import com.jobmatcher.backend.dto.response.RecommendedJobResponse;
 import com.jobmatcher.backend.entity.Job;
 
 import java.util.List;
@@ -15,7 +16,8 @@ public interface JobService {
 
     Job updateJob(Long id, Job job) throws Exception;
     List<Job> getAllJobs();
-    List<Job> getRecommendedJobs(Long userId);
+
+    List<RecommendedJobResponse> getRecommendedJobsForUser(Long userId) throws Exception;
 
     void deleteJob(Long id);
 

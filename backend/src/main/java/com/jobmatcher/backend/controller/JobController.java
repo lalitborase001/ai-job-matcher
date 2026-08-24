@@ -2,11 +2,13 @@ package com.jobmatcher.backend.controller;
 
 import com.jobmatcher.backend.dto.request.CreateJobRequest;
 import com.jobmatcher.backend.dto.response.JobResponse;
+import com.jobmatcher.backend.dto.response.RecommendedJobResponse;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.entity.User;
 import com.jobmatcher.backend.service.JobService;
 import com.jobmatcher.backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +34,7 @@ public class JobController {
         return ResponseEntity.ok(jobService.getAllJobs());
     }
 
-    @GetMapping("/recommended")
-    public ResponseEntity<List<Job>> getRecommendedJobs(org.springframework.security.core.Authentication authentication) throws Exception {
-        User user = userService.findUserByEmail(authentication.getName());
-        return ResponseEntity.ok(jobService.getRecommendedJobs(user.getId()));
-    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable Long id) throws Exception {
@@ -52,5 +50,17 @@ public class JobController {
     public ResponseEntity<String> deleteJob(@PathVariable Long id) {
         jobService.deleteJob(id);
         return ResponseEntity.ok("Job deleted successfully");
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<List<RecommendedJobResponse>> getRecommendedJobs(HttpServletRequest request) throws Exception {
+        // Securely identify the user via their JWT token
+        String jwt = request.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(jwt);
+
+        // Generate and return recommendations
+        List<RecommendedJobResponse> recommendations = jobService.getRecommendedJobsForUser(user.getId());
+
+        return ResponseEntity.ok(recommendations);
     }
 }
