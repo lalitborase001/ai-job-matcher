@@ -20,7 +20,7 @@ import java.util.List;
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
-    private final UserService userService; // <-- Added to decode the JWT
+    private final UserService userService;
 
     @PostMapping("/apply")
     public ResponseEntity<JobApplicationResponse> applyForJob(
@@ -29,7 +29,6 @@ public class JobApplicationController {
             @RequestParam Long resumeId,
             @RequestParam Double matchScore) throws Exception {
 
-        // SECURE: Backend figures out who the user is!
         String jwt = request.getHeader("Authorization");
         User user = userService.findUserByJwtToken(jwt);
 
@@ -37,7 +36,6 @@ public class JobApplicationController {
                 .body(jobApplicationService.applyForJob(user.getId(), jobId, resumeId, matchScore));
     }
 
-    // SECURE: Changed from /user/{userId} to /my-history
     @GetMapping("/my-history")
     public ResponseEntity<List<JobApplicationResponse>> getMyApplications(HttpServletRequest request) throws Exception {
 

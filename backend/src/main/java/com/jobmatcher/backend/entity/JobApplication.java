@@ -18,7 +18,6 @@ public class JobApplication {
 
     private String status;
 
-    // NEW: Store the AI Match Score
     private Double matchScore;
 
     @ManyToOne
@@ -29,7 +28,6 @@ public class JobApplication {
     @JoinColumn(name = "job_id")
     private Job job;
 
-    // NEW: Link the specific resume used for this match/application
     @ManyToOne
     @JoinColumn(name = "resume_id")
     private Resume resume;

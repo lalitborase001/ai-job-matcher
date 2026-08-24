@@ -16,9 +16,9 @@ public class ConnectedPlatform {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String platformName; // e.g., LinkedIn, Indeed, Naukri
+    private String platformName;
 
-    private String status; // CONNECTED, NOT_CONNECTED, COMING_SOON
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

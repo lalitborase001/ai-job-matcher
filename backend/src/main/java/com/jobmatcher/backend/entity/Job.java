@@ -26,7 +26,6 @@ public class Job {
     private String description;
     private String location;
 
-    // Added fields for unified job search architecture
     private String source;
     private String sourceUrl;
     private String employmentType;
