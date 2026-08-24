@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
 import MatchScore from '../components/match/MatchScore';
 import ResumeSelector from '../components/resume/ResumeSelector';
@@ -14,6 +15,7 @@ import StrengthsCard from '../components/matching/StrengthsCard';
 import MissingSkillsCard from '../components/matching/MissingSkillsCard';
 import ImprovementsCard from '../components/matching/ImprovementsCard';
 import InterviewQuestionsCard from '../components/matching/InterviewQuestionsCard';
+import ATSHighlighter from '../components/matching/ATSHighlighter'; // <-- 1. IMPORT HIGHLIGHTER
 import Loading from '../components/common/Loading';
 import EmptyState from '../components/common/EmptyState';
 
@@ -34,7 +36,7 @@ const ResumeMatch = () => {
 
   const [jobs, setJobs] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState(paramJobId || '');
-  const [isLoadingJobs, setIsLoadingJobs] = useState(!paramJobId);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true); // <-- 2. ALWAYS LOAD JOBS
 
   const [matchResult, setMatchResult] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
@@ -46,11 +48,12 @@ const ResumeMatch = () => {
     const fetchData = async () => {
       try {
         setIsLoadingResumes(true);
-        if (!paramJobId) setIsLoadingJobs(true);
+        setIsLoadingJobs(true);
 
+        // Fetch both Resumes and Jobs every time so we have the Job Descriptions for the highlighter
         const [resumesData, jobsData] = await Promise.all([
           getResumesAPI(),
-          !paramJobId ? getJobsAPI() : Promise.resolve(null)
+          getJobsAPI() 
         ]);
 
         const list = Array.isArray(resumesData) ? resumesData : [];
@@ -68,7 +71,7 @@ const ResumeMatch = () => {
         setError('Failed to load data. Please try again.');
       } finally {
         setIsLoadingResumes(false);
-        if (!paramJobId) setIsLoadingJobs(false);
+        setIsLoadingJobs(false);
       }
     };
     fetchData();
@@ -111,6 +114,9 @@ const ResumeMatch = () => {
   if (isLoadingResumes || isLoadingJobs) return <Loading message="Loading data..." />;
 
   const isStandalone = !paramJobId;
+  
+  // Find the selected job object so we can pass its description to the highlighter
+  const selectedJob = jobs.find(j => String(j.id) === String(selectedJobId));
 
   return (
     <Box sx={{ maxWidth: 1000, mx: 'auto', p: { xs: 2, md: 3 } }}>
@@ -207,8 +213,34 @@ const ResumeMatch = () => {
                 </Box>
 
                 <Divider sx={{ my: 4 }} />
-
+                
                 <AiSummary summary={matchResult.summary} />
+
+                {/* 3. THE HIGHLIGHTER UI BLOCK */}
+                {selectedJob && selectedJob.description && (
+                  <Box sx={{ mt: 5, mb: 4 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <ManageSearchIcon color="primary" /> Keyword Analysis
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      We scanned the job description. Green highlights indicate skills found in your resume, while red indicates missing requirements.
+                    </Typography>
+                    <Box sx={{ 
+                      p: 3, 
+                      bgcolor: '#f8fafc', 
+                      borderRadius: 3, 
+                      border: '1px solid #e2e8f0',
+                      maxHeight: 400, 
+                      overflowY: 'auto' 
+                    }}>
+                      <ATSHighlighter 
+                        text={selectedJob.description} 
+                        matchedSkills={matchResult.strengths} 
+                        missingSkills={matchResult.missingSkills} 
+                      />
+                    </Box>
+                  </Box>
+                )}
 
                 <Divider sx={{ my: 4 }} />
 
