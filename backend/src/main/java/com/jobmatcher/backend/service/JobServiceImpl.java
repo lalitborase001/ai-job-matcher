@@ -89,7 +89,9 @@ public class JobServiceImpl implements JobService{
         }
 
         // 2. Extract user skills into a clean list
-        List<String> userSkills = Arrays.stream(profile.getSkills().split(","))
+        // 2. Extract user skills into a clean list
+        List<String> userSkills = profile.getSkills().stream()
+                .filter(skill -> skill != null) // Safety check to prevent null errors
                 .map(String::trim)
                 .map(String::toLowerCase)
                 .toList();
