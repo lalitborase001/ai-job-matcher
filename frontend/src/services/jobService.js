@@ -24,3 +24,10 @@ export const getRecommendedJobsAPI = async () => {
   const response = await axiosInstance.get('/api/jobs/recommended');
   return response.data;
 };
+
+export const searchLiveJobsAPI = async (title, location) => {
+  const response = await axiosInstance.get('/api/jobs/live-search', {
+    params: { title, location }
+  });
+  return response.data;
+};

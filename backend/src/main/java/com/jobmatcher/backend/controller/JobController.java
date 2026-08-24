@@ -5,6 +5,7 @@ import com.jobmatcher.backend.dto.response.JobResponse;
 import com.jobmatcher.backend.dto.response.RecommendedJobResponse;
 import com.jobmatcher.backend.entity.Job;
 import com.jobmatcher.backend.entity.User;
+import com.jobmatcher.backend.service.ExternalJobBoardServiceImpl;
 import com.jobmatcher.backend.service.JobService;
 import com.jobmatcher.backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -23,6 +25,22 @@ public class JobController {
 
     private final JobService jobService;
     private final UserService userService;
+    private final ExternalJobBoardServiceImpl externalJobBoardService;
+
+    public JobController(JobService jobService, UserService userService, ExternalJobBoardServiceImpl externalJobBoardService) {
+        this.jobService = jobService;
+        this.userService = userService;
+        this.externalJobBoardService = externalJobBoardService;
+    }
+
+    @GetMapping("/live-search")
+    public ResponseEntity<List<JobResponse>> searchLiveJobs(
+            @RequestParam(defaultValue = "Software Engineer") String title,
+            @RequestParam(defaultValue = "Remote") String location) {
+
+        List<JobResponse> liveJobs = externalJobBoardService.fetchLiveJobs(title, location);
+        return ResponseEntity.ok(liveJobs);
+    }
 
     @PostMapping
     public ResponseEntity<JobResponse> createJob(@RequestBody CreateJobRequest request){
