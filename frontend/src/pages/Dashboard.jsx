@@ -1,3 +1,5 @@
+import axiosInstance from '../api/axiosInstance';
+
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -17,8 +19,10 @@ import HourglassEmptyOutlinedIcon from '@mui/icons-material/HourglassEmptyOutlin
 import InsightsIcon from '@mui/icons-material/Insights';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import LinkIcon from '@mui/icons-material/Link';
+import { getRecommendedJobsAPI } from '../services/jobService';
 
 export default function Dashboard() {
+  const [recommendationCount, setRecommendationCount] = useState(0);
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState({
     totalApplications: 0,
@@ -36,19 +40,23 @@ export default function Dashboard() {
       try {
         setLoading(true);
         setError('');
-        const [historyData, statsData] = await Promise.all([
+        
+        // Fetch History, Stats, and Recommendations at the same time!
+        const [historyData, statsResponse, recommendedData] = await Promise.all([
           getMyApplicationsAPI(),
-          getDashboardStatsAPI(),
+          axiosInstance.get('/dashboard/stats'),
+          getRecommendedJobsAPI().catch(() => []) // We catch errors here so the dashboard still loads even if recommendations fail
         ]);
-        setHistory(
-          Array.isArray(historyData)
-            ? [...historyData].sort((a, b) => (b.applicationId || 0) - (a.applicationId || 0))
-            : []
-        );
-        setStats(statsData || { totalApplications: 0, averageMatchScore: 0, topMatchScore: 0, pendingApplications: 0 });
-      } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
-        setError("We couldn't load your dashboard.");
+        
+        setHistory(Array.isArray(historyData) ? historyData.sort((a, b) => (b.applicationId || 0) - (a.applicationId || 0)) : []);
+        setStats(statsResponse?.data || { totalApplications: 0, averageMatchScore: 0, topMatchScore: 0, pendingApplications: 0 });
+        
+        // Set the dynamic count!
+        setRecommendationCount(recommendedData ? recommendedData.length : 0);
+        
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        setError('Unable to load dashboard. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -133,7 +141,12 @@ export default function Dashboard() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Discover roles matched to your extracted skills and experience.
             </Typography>
-            <Chip label={`${history.length} Saved Matches`} color="primary" size="small" />
+            <Chip 
+              label={`${recommendationCount} New Matches`} 
+              color="primary" 
+              size="small" 
+              sx={{ fontWeight: 'bold' }}
+            />
           </Paper>
         </Grid>
 
