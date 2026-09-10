@@ -21,11 +21,10 @@ public class DashboardController {
 
     @GetMapping("/stats")
     public ResponseEntity<DashboardStatsResponse> getDashboardStats(HttpServletRequest request) throws Exception {
-        // Extract the user securely from the JWT token
+
         String jwt = request.getHeader("Authorization");
         User user = userService.findUserByJwtToken(jwt);
-        
-        // Generate and return the stats
+
         return ResponseEntity.ok(dashboardService.getUserStats(user.getId()));
     }
 }

@@ -72,11 +72,11 @@ public class JobController {
 
     @GetMapping("/recommended")
     public ResponseEntity<List<RecommendedJobResponse>> getRecommendedJobs(HttpServletRequest request) throws Exception {
-        // Securely identify the user via their JWT token
+
         String jwt = request.getHeader("Authorization");
         User user = userService.findUserByJwtToken(jwt);
 
-        // Generate and return recommendations
+
         List<RecommendedJobResponse> recommendations = jobService.getRecommendedJobsForUser(user.getId());
 
         return ResponseEntity.ok(recommendations);

@@ -30,7 +30,6 @@ public class CandidateProfileServiceImpl implements CandidateProfileService {
 
         User user = resume.getUser();
 
-        // Optional: delete existing profile for this user/resume
         Optional<CandidateProfile> existing = candidateProfileRepository.findByUserId(user.getId());
         existing.ifPresent(candidateProfileRepository::delete);
 
