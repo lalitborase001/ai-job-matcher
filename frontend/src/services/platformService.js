@@ -17,3 +17,8 @@ export const disconnectPlatformAPI = async (platformName) => {
   const response = await axiosInstance.post(`/api/platforms/${platformName}/disconnect`, {});
   return response.data;
 };
+
+export const linkGoogleAPI = async (token) => {
+  const response = await axiosInstance.post('/api/platforms/link/google', { token });
+  return response.data;
+};

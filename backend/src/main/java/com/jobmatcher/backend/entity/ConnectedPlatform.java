@@ -23,4 +23,8 @@ public class ConnectedPlatform {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    private String platformUserId;
+    private String profileUrl;
+    private String syncStatus;
 }

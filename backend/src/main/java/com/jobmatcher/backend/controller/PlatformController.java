@@ -41,4 +41,23 @@ public class PlatformController {
         User user = userService.findUserByEmail(authentication.getName());
         return ResponseEntity.ok(platformIntegrationService.disconnectPlatform(user.getId(), platformName));
     }
+
+    @PostMapping("/link/google")
+    public ResponseEntity<?> linkGoogleAccount(
+            @RequestHeader("Authorization") String jwt,
+            @RequestBody Map<String, String> payload) {
+
+        try {
+            // 1. Securely identify the currently logged-in user
+            User user = userService.findUserByJwtToken(jwt);
+
+            // 2. Pass the token to the service
+            String googleToken = payload.get("token");
+            platformIntegrationService.linkGoogleAccount(user, googleToken);
+
+            return ResponseEntity.ok(Map.of("message", "Successfully linked Google account!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

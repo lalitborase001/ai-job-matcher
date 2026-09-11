@@ -2,11 +2,11 @@ import axios from 'axios';
 
 import { API_BASE_URL } from '../constants/config';
 
+
+
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // Vite looks for the environment variable first. If it's missing (like on localhost), it falls back.
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080', 
 });
 
 axiosInstance.interceptors.request.use(

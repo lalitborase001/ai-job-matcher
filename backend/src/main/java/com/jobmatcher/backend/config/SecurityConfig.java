@@ -83,7 +83,7 @@ public class SecurityConfig {
         ));
 
         configuration.setAllowCredentials(true);
-
+        configuration.setAllowedOrigins(List.of("*"));
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
