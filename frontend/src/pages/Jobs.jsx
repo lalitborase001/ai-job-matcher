@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Grid, Paper, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import WorkIcon from '@mui/icons-material/Work';
 import { useNavigate } from 'react-router-dom';
 
 import { searchLiveJobsAPI } from '../services/jobService';
@@ -23,25 +23,21 @@ export default function Jobs() {
     try {
       setLoading(true);
       setError('');
-      // Trigger the external API call we wired up in jobService.js
       const data = await searchLiveJobsAPI(title, location);
       setJobs(data || []);
     } catch (err) {
-      console.error("Job search failed:", err);
       setError('Failed to load live jobs. Ensure your backend API is running and configured.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Automatically fetch default jobs on first load
   useEffect(() => {
     fetchJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSearch = (e) => {
-    e.preventDefault(); // Prevents the page from refreshing on form submit
+    e.preventDefault();
     fetchJobs();
   };
 
@@ -52,7 +48,6 @@ export default function Jobs() {
         subtitle="Search for live opportunities pulled directly from external job boards." 
       />
 
-      {/* 1. PREMIUM SEARCH BAR */}
       <Paper 
         component="form" 
         onSubmit={handleSearch}
@@ -109,7 +104,6 @@ export default function Jobs() {
         </Button>
       </Paper>
 
-      {/* 2. RESULTS AREA */}
       {loading ? (
         <Loading message="Scouring job boards for live roles..." />
       ) : error ? (
@@ -121,7 +115,7 @@ export default function Jobs() {
         />
       ) : jobs.length === 0 ? (
         <EmptyState 
-          icon={<WorkOutlineIcon fontSize="inherit" />}
+          icon={<WorkIcon fontSize="inherit" />}
           title="No Jobs Found" 
           subtitle={`We couldn't find any live listings for "${title}" in "${location}".`} 
         />
@@ -129,7 +123,6 @@ export default function Jobs() {
         <Grid container spacing={3}>
           {jobs.map((job) => (
             <Grid item xs={12} md={6} lg={4} key={job.id}>
-              {/* Maps through the results and renders your existing JobCard component */}
               <JobCard job={job} />
             </Grid>
           ))}
