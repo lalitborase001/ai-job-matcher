@@ -27,12 +27,6 @@ public class JobController {
     private final UserService userService;
     private final ExternalJobBoardServiceImpl externalJobBoardService;
 
-    public JobController(JobService jobService, UserService userService, ExternalJobBoardServiceImpl externalJobBoardService) {
-        this.jobService = jobService;
-        this.userService = userService;
-        this.externalJobBoardService = externalJobBoardService;
-    }
-
     @GetMapping("/live-search")
     public ResponseEntity<List<JobResponse>> searchLiveJobs(
             @RequestParam(defaultValue = "Software Engineer") String title,

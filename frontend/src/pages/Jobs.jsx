@@ -1,185 +1,140 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import {
-  Box, Typography, Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Alert, Fab,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { getJobsAPI, createJobAPI, deleteJobAPI } from '../services/jobService';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Box, TextField, Button, Grid, Paper, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import { useNavigate } from 'react-router-dom';
 
-import PageHeader from '../components/common/PageHeader';
+import { searchLiveJobsAPI } from '../services/jobService';
 import JobCard from '../components/jobs/JobCard';
-import JobFilters from '../components/jobs/JobFilters';
 import Loading from '../components/common/Loading';
 import EmptyState from '../components/common/EmptyState';
+import PageHeader from '../components/common/PageHeader';
 
-const Jobs = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Carried over from the Resumes page when the user clicks "AI Match" on a
-  // specific resume, so we can pre-select it once they pick a job.
-  const preselectedResumeId = location.state?.preselectedResumeId;
-
+export default function Jobs() {
+  const [title, setTitle] = useState('Software Engineer');
+  const [location, setLocation] = useState('Remote');
   const [jobs, setJobs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
-
-  const [filters, setFilters] = useState({ q: '', location: '', sort: 'relevance' });
+  const navigate = useNavigate();
 
   const fetchJobs = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       setError('');
-      const data = await getJobsAPI();
-      setJobs(Array.isArray(data) ? data : []);
+      // Trigger the external API call we wired up in jobService.js
+      const data = await searchLiveJobsAPI(title, location);
+      setJobs(data || []);
     } catch (err) {
-      console.error('Failed to fetch jobs:', err);
-      setError('Could not load jobs. Please try again.');
+      console.error("Job search failed:", err);
+      setError('Failed to load live jobs. Ensure your backend API is running and configured.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  // Automatically fetch default jobs on first load
   useEffect(() => {
     fetchJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Backend has no search/sort query params, so we filter and sort the
-  // already-fetched list client-side.
-  const visibleJobs = useMemo(() => {
-    const q = filters.q.trim().toLowerCase();
-    const loc = filters.location.trim().toLowerCase();
-
-    let result = jobs.filter((job) => {
-      const matchesQuery = !q || `${job.title} ${job.description} ${job.company || ''}`.toLowerCase().includes(q);
-      const matchesLocation = !loc || (job.location || '').toLowerCase().includes(loc);
-      return matchesQuery && matchesLocation;
-    });
-
-    if (filters.sort === 'recent') {
-      result = [...result].sort((a, b) => (b.id || 0) - (a.id || 0));
-    }
-
-    return result;
-  }, [jobs, filters]);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    reset();
+  const handleSearch = (e) => {
+    e.preventDefault(); // Prevents the page from refreshing on form submit
+    fetchJobs();
   };
-
-  const onSubmit = async (data) => {
-    try {
-      setError('');
-      const newJob = await createJobAPI(data);
-      setJobs([newJob, ...jobs]);
-      handleCloseModal();
-    } catch (err) {
-      console.error('Failed to create job:', err);
-      setError('Failed to save the job description.');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    const prev = jobs;
-    setJobs(jobs.filter((job) => job.id !== id));
-    try {
-      await deleteJobAPI(id);
-    } catch (err) {
-      console.error('Failed to delete job:', err);
-      setError('Failed to delete the job.');
-      setJobs(prev);
-    }
-  };
-
-  const goToJob = (id) => navigate(`/jobs/${id}`, { state: { preselectedResumeId } });
-  const goToMatch = (id) => navigate(`/jobs/${id}/match`, { state: { preselectedResumeId } });
-
-  if (isLoading) return <Loading message="Loading jobs..." />;
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '80vh' }}>
-      <PageHeader
-        title="Find Your Next Opportunity"
-        subtitle="Discover jobs that match your skills and experience."
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      <PageHeader 
+        title="Discover Jobs" 
+        subtitle="Search for live opportunities pulled directly from external job boards." 
       />
 
-      {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>{error}</Alert>}
+      {/* 1. PREMIUM SEARCH BAR */}
+      <Paper 
+        component="form" 
+        onSubmit={handleSearch}
+        elevation={0} 
+        sx={{ 
+          p: 2, 
+          mb: 4, 
+          borderRadius: 4, 
+          border: '1px solid rgba(15,23,42,0.08)',
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' }, 
+          gap: 2,
+          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)'
+        }}
+      >
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Job title, keywords, or company"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+            sx: { borderRadius: 2, bgcolor: '#f8fafc' }
+          }}
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="City, state, or 'Remote'"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LocationOnIcon color="action" />
+              </InputAdornment>
+            ),
+            sx: { borderRadius: 2, bgcolor: '#f8fafc' }
+          }}
+        />
+        <Button 
+          type="submit" 
+          variant="contained" 
+          size="large" 
+          sx={{ px: 4, borderRadius: 2, fontWeight: 'bold', minWidth: { md: '150px' } }}
+          disabled={loading}
+        >
+          Search
+        </Button>
+      </Paper>
 
-      <JobFilters filters={filters} setFilters={setFilters} onSearch={() => {}} />
-
-      {visibleJobs.length === 0 ? (
-        <EmptyState
-          title={jobs.length === 0 ? 'No opportunities match your search yet.' : 'No opportunities match your filters.'}
-          subtitle={jobs.length === 0 ? 'Check back soon for new listings.' : 'Try adjusting your search or location.'}
-          actionLabel="Refresh"
-          onAction={() => fetchJobs()}
+      {/* 2. RESULTS AREA */}
+      {loading ? (
+        <Loading message="Scouring job boards for live roles..." />
+      ) : error ? (
+        <EmptyState 
+          title="API Error" 
+          subtitle={error} 
+          actionLabel="Try Again" 
+          onAction={fetchJobs} 
+        />
+      ) : jobs.length === 0 ? (
+        <EmptyState 
+          icon={<WorkOutlineIcon fontSize="inherit" />}
+          title="No Jobs Found" 
+          subtitle={`We couldn't find any live listings for "${title}" in "${location}".`} 
         />
       ) : (
         <Grid container spacing={3}>
-          {visibleJobs.map((job) => (
+          {jobs.map((job) => (
             <Grid item xs={12} md={6} lg={4} key={job.id}>
-              <JobCard job={job} onMatch={goToMatch} onView={goToJob} />
+              {/* Maps through the results and renders your existing JobCard component */}
+              <JobCard job={job} />
             </Grid>
           ))}
         </Grid>
       )}
-
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={handleOpenModal}
-        sx={{ position: 'fixed', bottom: 32, right: 32 }}
-      >
-        <AddIcon />
-      </Fab>
-
-      <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="sm">
-        <DialogTitle>Add New Job Description</DialogTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent dividers>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Job Title"
-              type="text"
-              fullWidth
-              variant="outlined"
-              {...register('title', { required: 'Job title is required' })}
-              error={!!errors.title}
-              helperText={errors.title?.message}
-              sx={{ mb: 3 }}
-            />
-            <TextField
-              label="Job Description"
-              multiline
-              rows={6}
-              fullWidth
-              variant="outlined"
-              {...register('description', {
-                required: 'Job description is required',
-                minLength: { value: 20, message: 'Please provide more detail (min 20 characters)' },
-              })}
-              error={!!errors.description}
-              helperText={errors.description?.message}
-            />
-          </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={handleCloseModal} color="inherit">Cancel</Button>
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Job'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
     </Box>
   );
-};
-
-export default Jobs;
+}
