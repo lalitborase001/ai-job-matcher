@@ -16,12 +16,12 @@ import ConnectedPlatforms from '../pages/ConnectedPlatforms';
 import RecommendedJobs from '../pages/RecommendedJobs';
 import ApplicationAssistant from '../pages/ApplicationAssistant';
 import Profile from '../pages/Profile';
+import Home from '../pages/Home';
 
-const HomePlaceholder = () => <h1>Home Page</h1>;
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<HomePlaceholder />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
