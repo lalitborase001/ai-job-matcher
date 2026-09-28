@@ -37,8 +37,8 @@ public class SecurityConfig {
                         // Keep your existing endpoints below
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()
-                );
-
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -76,4 +76,5 @@ public class SecurityConfig {
 
         return source; 
     }
+
 }
