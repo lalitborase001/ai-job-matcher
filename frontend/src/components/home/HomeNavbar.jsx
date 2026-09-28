@@ -78,11 +78,11 @@ const HomeNavbar = () => {
           ) : (
             <>
               {!isMobile && (
-                <Button color="inherit" sx={{ fontWeight: 600 }} onClick={() => navigate('/login')}>
+                <Button variant="outlined" color="primary" sx={{ borderRadius: 8, px: 3, fontWeight: 600, borderWidth: 2, '&:hover': { borderWidth: 2 } }} onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
               )}
-              <Button variant="contained" onClick={() => navigate('/register')} sx={{ borderRadius: 8, px: 3 }}>
+              <Button variant="contained" color="primary" onClick={() => navigate('/register')} sx={{ borderRadius: 8, px: 3 }}>
                 Get Started
               </Button>
             </>

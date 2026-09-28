@@ -89,25 +89,32 @@ const HeroSection = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Box sx={{ position: 'relative', height: 500, display: { xs: 'none', sm: 'block' } }}>
+          <Box sx={{ 
+            position: 'relative', 
+            width: '100%', 
+            maxWidth: { xs: 360, sm: 480, md: 500 }, 
+            mx: 'auto', 
+            display: 'flex', 
+            flexDirection: 'column',
+            mt: { xs: 4, md: 0 },
+            pb: { xs: 2, md: 0 }
+          }}>
             {/* Decoration */}
             <Box sx={{ 
-              position: 'absolute', top: '10%', right: '5%', 
-              width: 300, height: 300, 
+              position: 'absolute', top: '10%', right: '10%', 
+              width: 250, height: 250, 
               bgcolor: 'primary.light', 
               borderRadius: '50%', 
               filter: 'blur(80px)', 
-              opacity: 0.3,
+              opacity: 0.2,
               zIndex: 0
             }} />
             
             {/* Card 1: Resume Analysis */}
             <Card 
               sx={{ 
-                position: 'absolute', 
-                top: 20, 
-                left: 0, 
-                width: 280, 
+                width: { xs: '90%', sm: 280 }, 
+                alignSelf: 'flex-start',
                 zIndex: 2,
                 boxShadow: '0 20px 40px rgba(15, 23, 42, 0.1)',
                 animation: `${float} 6s ease-in-out infinite`,
@@ -138,15 +145,16 @@ const HeroSection = () => {
             {/* Card 2: Job Match */}
             <Card 
               sx={{ 
-                position: 'absolute', 
-                bottom: 20, 
-                right: 0, 
-                width: 320, 
+                width: { xs: '95%', sm: 320 }, 
+                alignSelf: 'flex-end',
+                mt: { xs: 2, sm: '-60px' },
+                mr: { xs: 0, sm: 2 },
                 zIndex: 3,
                 boxShadow: '0 24px 48px rgba(15, 23, 42, 0.12)',
                 animation: `${floatDelayed} 8s ease-in-out infinite`,
                 borderRadius: 4,
-                border: '1px solid rgba(99, 102, 241, 0.2)'
+                border: '1px solid rgba(99, 102, 241, 0.2)',
+                bgcolor: 'background.paper'
               }}
             >
               <CardContent sx={{ p: 3 }}>
