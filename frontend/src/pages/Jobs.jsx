@@ -12,17 +12,24 @@ import EmptyState from '../components/common/EmptyState';
 import PageHeader from '../components/common/PageHeader';
 
 export default function Jobs() {
-  const [title, setTitle] = useState('Software Engineer');
-  const [location, setLocation] = useState('Remote');
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
 
   const fetchJobs = async () => {
+    if (!title.trim() && !location.trim()) {
+        setError('Please enter a job title or location to search.');
+        return;
+    }
+    
     try {
       setLoading(true);
       setError('');
+      setHasSearched(true);
       const data = await searchLiveJobsAPI(title, location);
       setJobs(data || []);
     } catch (err) {
@@ -31,10 +38,6 @@ export default function Jobs() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -108,22 +111,38 @@ export default function Jobs() {
         <Loading message="Scouring job boards for live roles..." />
       ) : error ? (
         <EmptyState 
-          title="API Error" 
+          title="Notice" 
           subtitle={error} 
-          actionLabel="Try Again" 
-          onAction={fetchJobs} 
+          actionLabel={error.includes('Please enter') ? null : "Try Again"} 
+          onAction={error.includes('Please enter') ? null : fetchJobs} 
+        />
+      ) : !hasSearched ? (
+        <EmptyState 
+          icon={<SearchIcon fontSize="inherit" />}
+          title="Search for jobs to discover opportunities" 
+          subtitle="Enter a job title, skill, or location to find relevant jobs." 
         />
       ) : jobs.length === 0 ? (
         <EmptyState 
           icon={<WorkIcon fontSize="inherit" />}
           title="No Jobs Found" 
-          subtitle={`We couldn't find any live listings for "${title}" in "${location}".`} 
+          subtitle={`We couldn't find any live listings matching your search.`} 
         />
       ) : (
         <Grid container spacing={3}>
           {jobs.map((job) => (
             <Grid item xs={12} md={6} lg={4} key={job.id}>
-              <JobCard job={job} />
+              <JobCard 
+                job={job} 
+                onView={() => {
+                  if (job.sourceUrl) {
+                    window.open(job.sourceUrl, '_blank');
+                  } else {
+                    navigate(`/jobs/${job.id}`);
+                  }
+                }}
+                onMatch={() => navigate(`/jobs/${job.id}`)}
+              />
             </Grid>
           ))}
         </Grid>

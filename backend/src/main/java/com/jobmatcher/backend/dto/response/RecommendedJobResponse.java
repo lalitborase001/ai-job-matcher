@@ -14,4 +14,11 @@ public class RecommendedJobResponse {
     private String location;
     private Double matchScore;
     private String matchReason; 
+    
+    // Additional fields for better UI
+    private String skills;
+    private String source;
+    private String sourceUrl;
+    private String employmentType;
+    private java.time.LocalDateTime postedDate;
 }

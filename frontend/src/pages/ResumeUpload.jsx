@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Button, CircularProgress, Alert, Grid } from '@mui/material';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { uploadResumeAPI, getResumesAPI, deleteResumeAPI } from '../services/resumeService';
+import { uploadResumeAPI, getResumesAPI, deleteResumeAPI, viewResumeAPI, downloadResumeAPI } from '../services/resumeService';
 import PageHeader from '../components/common/PageHeader';
 import ResumeCard from '../components/resume/ResumeCard';
 import Loading from '../components/common/Loading';
@@ -78,13 +78,36 @@ const ResumeUpload = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleView = async (id) => {
     try {
+      await viewResumeAPI(id);
+    } catch (err) {
+      console.error('Failed to view resume', err);
+      setError("We couldn't open that resume.");
+    }
+  };
+
+  const handleDownload = async (id, filename) => {
+    try {
+      await downloadResumeAPI(id, filename);
+    } catch (err) {
+      console.error('Failed to download resume', err);
+      setError("We couldn't download that resume.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this resume?")) return;
+    
+    try {
+      // Optimistically remove from UI
+      setResumes(prev => prev.filter(r => r.id !== id));
       await deleteResumeAPI(id);
-      fetchResumes();
+      setSuccess("Resume deleted successfully.");
     } catch (err) {
       console.error('Failed to delete resume', err);
       setError("We couldn't delete that resume. Please try again.");
+      fetchResumes(); // Restore on failure
     }
   };
 
@@ -159,7 +182,13 @@ const ResumeUpload = () => {
         <Grid container spacing={2}>
           {resumes.map((r) => (
             <Grid item xs={12} md={6} lg={4} key={r.id}>
-              <ResumeCard resume={r} onMatch={handleMatch} onDelete={handleDelete} />
+              <ResumeCard 
+                resume={r} 
+                onMatch={handleMatch} 
+                onDelete={handleDelete} 
+                onView={handleView}
+                onDownload={(id) => handleDownload(id, r.fileName)}
+              />
             </Grid>
           ))}
         </Grid>

@@ -101,21 +101,49 @@ export default function RecommendedJobs() {
                       sx={{ fontWeight: 'bold', px: 1 }}
                     />
                   </Box>
+                  {job.employmentType && (
+                    <Typography variant="caption" sx={{ display: 'block', mb: 1, color: 'text.secondary' }}>
+                      {job.employmentType}
+                    </Typography>
+                  )}
+                  {job.skills && (
+                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mb: 2 }}>
+                      {job.skills.split(',').map((skill, idx) => (
+                        <Chip key={idx} label={skill.trim()} size="small" sx={{ bgcolor: 'primary.50', color: 'primary.main', fontWeight: 600 }} />
+                      ))}
+                    </Box>
+                  )}
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 1 }}>
                     💡 {job.matchReason}
                   </Typography>
+                  {job.postedDate && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                      Posted: {new Date(job.postedDate).toLocaleDateString()}
+                    </Typography>
+                  )}
                 </CardContent>
-                <Box sx={{ p: 3, pt: 0 }}>
+                <Box sx={{ p: 3, pt: 0, display: 'flex', gap: 2 }}>
                   <Button
                     variant="contained"
                     fullWidth
                     size="large"
-                    onClick={() => navigate(`/jobs/${job.jobId}`)} // Navigates to job details where they can do a Deep Gemini Match
+                    onClick={() => navigate(`/jobs/${job.jobId}`)}
                     sx={{ borderRadius: 2, fontWeight: 700 }}
                   >
-                    View Job & Analyze
+                    AI Match
                   </Button>
+                  {(job.sourceUrl) && (
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      size="large"
+                      onClick={() => window.open(job.sourceUrl, '_blank')}
+                      sx={{ borderRadius: 2, fontWeight: 700, borderColor: 'rgba(0,0,0,0.12)' }}
+                    >
+                      Apply on {job.source || 'Platform'}
+                    </Button>
+                  )}
                 </Box>
               </Card>
             </Grid>

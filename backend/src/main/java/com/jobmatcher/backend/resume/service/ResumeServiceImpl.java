@@ -90,4 +90,10 @@ public class ResumeServiceImpl implements ResumeService {
         }
         resumeRepository.deleteById(id);
     }
+
+    @Override
+    public Resume getResumeEntity(Long id) {
+        return resumeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resume not found with id: " + id));
+    }
 }

@@ -132,7 +132,12 @@ public class JobServiceImpl implements JobService{
                             job.getCompany(),
                             job.getLocation(),
                             finalScore,
-                            "Matches " + matchCount + " of your core skills"
+                            "Matches " + matchCount + " of your core skills",
+                            job.getSkills(),
+                            job.getSource(),
+                            job.getSourceUrl(),
+                            job.getEmploymentType(),
+                            job.getPostedDate()
                     ));
                 }
             }

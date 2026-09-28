@@ -48,7 +48,9 @@ const JobCard = ({ job, onMatch, onView, matchScore = null }) => {
       </CardContent>
 
       <CardActions sx={{ justifyContent: 'space-between', p: 2, pt: 0 }}>
-        <Button size="small" variant="outlined" onClick={() => onView(job.id)}>View Details</Button>
+        <Button size="small" variant="outlined" onClick={() => onView(job.id)}>
+          {job.source ? `Apply on ${job.source}` : 'View Details'}
+        </Button>
         <Button size="small" variant="contained" startIcon={<AutoAwesomeIcon fontSize="small" />} onClick={() => onMatch(job.id)}>
           {matchScore !== null ? 'Prepare Application' : 'AI Match'}
         </Button>

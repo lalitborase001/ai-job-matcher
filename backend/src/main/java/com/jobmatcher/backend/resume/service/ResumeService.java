@@ -13,4 +13,6 @@ public interface ResumeService {
     List<ResumeResponse> getAllResumesForUser() throws Exception;
 
     void deleteResume(Long id);
+
+    com.jobmatcher.backend.entity.Resume getResumeEntity(Long id);
 }
